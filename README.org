@@ -6,5 +6,5 @@ Este repositorio contiene las relaciones de ejercicios del curso
 [[https://jaalonso.github.io/materias/PLconProlog/temas.html][temas del curso]]. Al dado de cada relación se encuentra un enlace a SWISH que
 permite trabajar con la relación sin necesidad de tener instalado Prolog.
 
-** Introducción a la programación lógica con Prolog
+* Introducción a la programación lógica con Prolog
 + [[./src/ejercicios-tema-2.pl][Tema 2: Listas, operadores y aritmética]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-2.pl][SWISH]]).
