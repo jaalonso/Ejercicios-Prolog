@@ -1,12 +1,12 @@
 % ejercicios-tema-3.pl
-% Ejercicios del Tema 3 (Estructuras).
+% Ejercicios del tema 3 (Estructuras).
 % José A. Alonso Jiménez <https://jaalonso.github.io>
 % Sevilla, 19-mayo-2022
 % ======================================================================
 
 % ----------------------------------------------------------------------
 % Ejercicio 1. En este ejercicio vamos a considerar el programa
-% familia.pl del Tema 3 que se incluye a continuación
+% familia.pl del tema 3 que se incluye a continuación
 % ----------------------------------------------------------------------
 
 familia(persona([tomás,garcía,pérez],
@@ -202,7 +202,7 @@ total([X|L],Y) :-
 
 % ----------------------------------------------------------------------
 % Ejercicio 2. En este ejercicio consideraremos el programa automata.pl
-% del Tema 3 que se incluye a continuación
+% del tema 3 que se incluye a continuación
 % ----------------------------------------------------------------------
 
 final(e3).
