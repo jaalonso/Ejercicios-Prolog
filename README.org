@@ -1,5 +1,5 @@
-#+TITLE: Ejercicios de programación lógica con Prolog
 #+OPTIONS: num:t
+#+TITLE: Ejercicios de programación lógica con Prolog
 
 Este repositorio contiene las relaciones de ejercicios del curso
 [[https://jaalonso.github.io/materias/PLconProlog/][Programación lógica con Prolog]]. Están ordenadas según los
@@ -12,3 +12,4 @@ permite trabajar con la relación sin necesidad de tener instalado Prolog.
 + [[./src/ejercicios-tema-4.pl][Tema 4: Retroceso, corte y negación]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-4.pl][SWISH]]).
 + [[./src/ejercicios-tema-5.pl][Tema 5: Programación lógica de orden superior]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-5.pl][SWISH]]).
 + [[./src/ejercicios-tema-6.pl][Tema 6: Estilo y eficiencia en programación lógica]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-6.pl][SWISH]]).
++ [[./src/ejercicios-tema-7.pl][Tema 7: Aplicaciones: Grafos, reinas y mapas]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-7.pl][SWISH]]).
