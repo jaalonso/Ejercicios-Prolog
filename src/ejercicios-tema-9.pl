@@ -241,3 +241,409 @@ asignación([E1,E2,E3,E4],[T1,T2,T3,T4],C) :-
 asignación_óptima([E1,E2,E3,E4],[T1,T2,T3,T4]) :-
    asignación([E1,E2,E3,E4],[T1,T2,T3,T4],C),
    not((asignación([E1,E2,E3,E4],[_,_,_,_],C1), C1 > C)).
+
+% ----------------------------------------------------------------------
+% § Ejercicios de temas anteriores
+% ----------------------------------------------------------------------
+
+% Nota. Es esta sección se definirán relaciones estudiadas en temas
+% anteriores pero usando restricciones.
+
+% ----------------------------------------------------------------------
+% Ejercicio 6. Definir la relación factorial(X,Y) se verifica si Y es el
+% factorial de X. Por ejemplo,
+%    ?- factorial(3,Y).
+%    Y = 6 ;
+%    false.
+%    
+%    ?- factorial(X,6).
+%    X = 3 ;
+%    false.
+%    
+%    ?- factorial(X,7).
+%    false.
+% ----------------------------------------------------------------------
+
+factorial(0,1).
+factorial(X,Y) :-
+   X #> 0,
+   A #= X - 1,
+   Y #= X * B,
+   factorial(A,B).
+
+% ----------------------------------------------------------------------
+% Ejercicio 7. Definir la relación máximo(X,Y,Z) que se verifica si Z es
+% el máximo de los números X e ~Y. Por ejemplo,
+%    ?- máximo(2,3,Z).
+%    Z = 3.
+%    
+%    ?- máximo(2,Y,3).
+%    Y = 3.
+%    
+%    ?- máximo(X,3,3).
+%    X in inf..3.
+% ----------------------------------------------------------------------
+
+máximo(X,Y,Z) :-
+   Z #= max(X,Y).
+
+% ----------------------------------------------------------------------
+% Ejercicio 8. (Algoritmo de Euclides). Dados dos enteros positivos X e
+% Y, el máximo común divisor (mcd) D puede obtenerse de la siguiente
+% manera: 
+% + Si X e Y son iguales, entonces D es igual a X.
+% + Si X < Y, entonces D es igual al máximo común divisor de X y la
+%   diferencia Y-X. 
+% + Si Y < X entonces D es igual al máximo común divisor de X y la
+%   diferencia X-Y. 
+% 
+% Definir el predicado mcd(X,Y,D) que se verifica si D es el máximo
+% común divisor de los enteros positivos X e Y. Por ejemplo,
+%    ?- mcd(6,10,D).
+%    D = 2 
+% ----------------------------------------------------------------------
+
+mcd(X,X,X).
+mcd(X,Y,Z) :-
+   X  #< Y,
+   Y1 #= Y - X,
+   mcd(X,Y1,Z).
+mcd(X,Y,Z) :-
+   X #> Y,
+   mcd(Y,X,Z).
+
+% ----------------------------------------------------------------------
+% Ejercicio 9.1. Supongamos que los cuadros del tablero de ajedrez los
+% representamos por pares de números [X,Y] con X e Y entre 1 y 8. 
+% 
+% Definir la relación salta(+C1,?C2) que se verifica si el caballo puede 
+% pasar en un movimiento del cuadrado C1 al cuadrado C2. Por ejemplo,
+%    ?- salta([1,1],S).
+%    S = [3,2] ;
+%    S = [2,3] ;
+%    false.
+%    
+%    ?- salta(X,[3,2]).
+%    X = [1,1] ;
+%    X = [1,3] ;
+%    X = [5,1] ;
+%    X = [5,3] ;
+%    X = [2,0] ;
+%    X = [2,4] ;
+%    X = [4,0] ;
+%    X = [4,4].
+% ----------------------------------------------------------------------
+
+salta([X,Y],[X1,Y1]) :-
+   [X,Y,X1,Y1] ins 1..8,
+   dxy(Dx,Dy),
+   X1 #= X+Dx,
+   Y1 #= Y+Dy.
+
+% dxy(?X,?Y) se verifica si un caballo puede moverse X espacios
+% horizontales e Y verticales.
+dxy(2,1).
+dxy(2,-1).
+dxy(-2,1).
+dxy(-2,-1).
+dxy(1,2).
+dxy(1,-2).
+dxy(-1,2).
+dxy(-1,-2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 9.2. Definir la relación camino(L) que se verifica si L es
+% una lista de cuadrados representando el camino recorrido por un
+% caballo sobre un tablero vacío. Por ejemplo, 
+%    ?- camino([[1,1]|C]).
+%    C = [] ;
+%    C = [[3,2]] ;
+%    C = [[3,2],[5,3]] ;
+%    C = [[3,2],[5,3],[7,4]] 
+%    
+%    ?- camino(L), append(_L1,[[5,3]],L).
+%    L = [[5,3]] ;
+%    L = [[3,2],[5,3]] ;
+%    L = [[3,4],[5,3]] ;
+%    L = [[7,2],[5,3]] ;
+%    L = [[7,4],[5,3]]
+%    
+%    ?- camino(L), length(L,4), append(_L1,[[5,3]],L).
+%    L = [[2,3],[1,1],[3,2],[5,3]] ;
+%    L = [[3,4],[1,3],[3,2],[5,3]] 
+% ----------------------------------------------------------------------
+
+camino([_]).
+camino([C1,C2|L]) :-
+   camino([C2|L]),
+   salta(C1,C2),
+   \+ member(C1,L),
+   \+ member(C2,L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 10. Definir la relación factores(X,Y,Z) que se verifica si
+% el producto de X e Y es Z. Por ejemplo,
+%    ?- factores(2,3,Z).
+%    Z = 6.
+%    
+%    ?- factores(2,Y,6).
+%    Y = 3.
+%    
+%    ?- factores(X,3,6).
+%    X = 2.
+%    
+%    ?- factores(2,Y,7).
+%    false.
+%    
+%    ?- factores(X,Y,6).
+%    X = -6,
+%    Y = -1 ;
+%    X = -3,
+%    Y = -2 ;
+%    X = -2,
+%    Y = -3 ;
+%    X = -1,
+%    Y = -6 ;
+%    X = 1,
+%    Y = 6 ;
+%    X = 2,
+%    Y = 3 ;
+%    X = 3,
+%    Y = 2 ;
+%    X = 6,
+%    Y = 1.
+% ----------------------------------------------------------------------
+
+factores(X,Y,Z) :-
+   Z #= X * Y,
+   label([X,Y]).
+
+% ----------------------------------------------------------------------
+% Ejercicio 11. Definir la relación suma_segura(X,Y,Z) se verifica si X
+% e Y son enteros y Z es la suma de X e Y. Por ejemplo,
+%    ?- suma_segura(2,3,Z).
+%    Z = 5.
+%    
+%    ?- suma_segura(2,Y,5).
+%    Y = 3.
+%    
+%    ?- suma_segura(X,3,5).
+%    X = 2.
+%    
+%    ?- suma_segura(X,Y,3).
+%    X = 0,
+%    Y = 3 ;
+%    X = 1,
+%    Y = 2 ;
+%    X = 2,
+%    Y = 1 ;
+%    X = 3,
+%    Y = 0.
+% ----------------------------------------------------------------------
+
+suma_segura(X,Y,Z) :-
+   [X,Y] ins 0..sup,
+   Z #= X+Y,
+   label([X,Y]).
+
+% ----------------------------------------------------------------------
+% Ejercicio 12. El problema de los cuadrados mágicos consiste en colocar
+% los números 1,2,3,4,5,6,7,8,9 en un cuadrado 3x3 de forma que todas
+% las líneas (filas, columnas y diagonales) sumen igual; es decir,
+% buscar los valores para las variables A, B ,C, D, E, F, G, H, I.
+%    +---+---+---+
+%    | A | B | C |
+%    +---+---+---+
+%    | D | E | F |
+%    +---+---+---+
+%    | G | H | I |
+%    +---+---+---+
+% tales que
+%    {A,B,C,D,E,F,G,H,I} = {1,2,3,4,5,6,7,8,9},
+%    A+B+C = 15,
+%    D+E+F = 15,
+%    G+H+I = 15,
+%    A+D+G = 15,
+%    B+E+H = 15,
+%    C+F+I = 15,
+%    A+E+I = 15,
+%    C+E+G = 15.
+%
+% Definir la relación cuadrado(L) que se verifica si L es una solución
+% del problema de los cuadrados mágicos. Por ejemplo, 
+%    ?- cuadrado(L).
+%    L = [2,7,6,9,5,1,4,3,8] ;
+%    L = [2,9,4,7,5,3,6,1,8] 
+%    ?- findall(_X,cuadrado(_X),_L),length(_L,N).
+%    N = 8.
+% ----------------------------------------------------------------------
+
+% 1ª solución
+cuadrado([A,B,C,D,E,F,G,H,I]) :-
+   [A,B,C,D,E,F,G,H,I] ins 1..9,
+   all_distinct([A,B,C,D,E,F,G,H,I]),
+   A+B+C #= 15,
+   D+E+F #= 15,
+   G+H+I #= 15,
+   A+D+G #= 15,
+   B+E+H #= 15,
+   C+F+I #= 15,
+   A+E+I #= 15,
+   C+E+G #= 15,
+   label([A,B,C,D,E,F,G,H,I]).
+
+% 2ª solución
+cuadrado_2(Sol):-
+  Sol = [A,B,C,D,E,F,G,H,I],
+  Sol ins 1..9,
+  all_distinct(Sol),
+  maplist(#=(15),
+    [A+B+C,
+     D+E+F,
+     G+H+I,
+     A+D+G,
+     B+E+H,
+     C+F+I,
+     A+E+I,
+     C+E+G]),
+  label(Sol).
+
+% ----------------------------------------------------------------------
+% Ejercicio 13, La sucesión de Fibonacci es 1, 1, 2, 3, 5, 8, ... y está
+% definida por 
+%    f(1) = 1
+%    f(2) = 1
+%    f(n) = f(n-1)+f(n-2), si n > 2
+%
+% Definir la relación fibonacci(N,X) que se verifica si X es el N-ésimo
+% término de la sucesión de Fibonacci. Por ejemplo,
+%    ?- fibonacci(6,X).
+%    X = 8 
+%    
+%    ?- fibonacci(X,8).
+%    X = 6 
+%    
+%    ?- fibonacci(X,9).
+%    false.
+% ----------------------------------------------------------------------
+
+fibonacci(1,1).
+fibonacci(2,1).
+fibonacci(N,F) :-
+   N #> 2,
+   F #>= 2,
+   N1 #= N-1,
+   N2 #= N-2,
+   F #= F1 + F2,
+   [F1,F2] ins 1..sup,
+   fibonacci(N1,F1),
+   fibonacci(N2,F2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 14. El problema de las N reinas consiste en colocar N reinas
+% en un tablero rectangular de dimensiones N por N de forma que no se
+% encuentren más de una en la misma línea: horizontal, vertical o
+% diagonal.
+%
+% Definir la relación reinas(N,S) que se verifica si S es una solución
+% del problema de las N reinas. Por ejemplo,  
+%    ?- reinas(4, Rs).
+%    Rs = [2,4,1,3] ;
+%    Rs = [3,1,4,2] 
+%    
+%    ?- reinas(8, Rs).
+%    Rs = [1,5,8,6,3,7,2,4]
+%    
+%    ?- findall(S,reinas(8,S),_L), length(_L,N).
+%    N = 92.
+% ----------------------------------------------------------------------
+
+reinas(N, Rs) :-
+   length(Rs, N),
+   Rs ins 1..N,
+   seguras(Rs),
+   label(Rs).
+
+seguras([]).
+seguras([R|Rs]) :-
+   seguras(Rs, R, 1),
+   seguras(Rs).
+
+seguras([], _, _).
+seguras([R|Rs], R0, D0) :-
+   R0 #\= R,
+   abs(R0 - R) #\= D0,
+   D1 #= D0 + 1,
+   seguras(Rs, R0, D1).
+
+% ----------------------------------------------------------------------
+% Ejercicio 15.1. (Coloreado de mapas). Se considera el siguiente mapa
+%    +----------+----------+       
+%    |    a     |     b    |       
+%    +----+-----+-----+----+       
+%    |    |           |    |       
+%    | c  |     d     | e  |       
+%    |    |           |    |       
+%    +----+-----+-----+----+       
+%    |    f     |     g    |       
+%    +----------+----------+       
+%
+% Definir la relación coloración1(Rs) que se verifica si Rs es una de
+% números que representa los colores de los regiones de Rs tal que las
+% regiones vecinas tengan colores distintos. Por ejemplo,  
+%    ?- coloración1(Rs).
+%    Rs = [1,2,2,3,1,1,2] ;
+%    Rs = [1,2,2,3,1,1,4] 
+% ----------------------------------------------------------------------
+
+coloración1(Rs) :-
+   Rs = [A,B,C,D,E,F,G],
+   distinta(A,[B,C,D]),
+   distinta(B,[A,D,E]),
+   distinta(C,[A,D,F]),
+   distinta(D,[A,B,C,E,F,G]),
+   distinta(E,[B,D,G]),
+   distinta(F,[C,D,G]),
+   distinta(G,[D,E,F]),
+   label(Rs).
+
+distinta(X,Ys) :-
+   X in 1..4,
+   Ys ins 1..4,
+   maplist(#\=(X),Ys),
+   label([X|Ys]).
+
+% ----------------------------------------------------------------------
+% Ejercicio 15.2. Se considera el siguiente mapa
+%    +----+-----+-----+----+
+%    | a  |  b  |  c  | d  |
+%    +----+-----+-----+----+
+%    | e  |           | f  |
+%    +----+     k     +----+
+%    | g  |           | h  |
+%    +----+-----+-----+----+
+%    |    i     |     j    |
+%    +----------+----------+
+%
+% Definir la relación coloración2(Rs) que se verifica si Rs es una de
+% números que representa los colores de los regiones de Rs tal que las
+% regiones vecinas tengan colores distintos. Por ejemplo,  
+%    ?- coloración2(Rs).
+%    Rs = [1,2,1,2,3,3,1,1,2,3,4] ;
+%    Rs = [1,2,1,2,3,3,1,1,3,2,4] 
+% ----------------------------------------------------------------------
+
+coloración2(Rs) :-
+   Rs = [A,B,C,D,E,F,G,H,I,J,K],
+   distinta(A,[B,E,K]),
+   distinta(B,[A,C,E,K]),
+   distinta(C,[B,D,F,K]),
+   distinta(D,[C,F,K]),
+   distinta(E,[A,B,G,K]),
+   distinta(F,[C,D,H,K]),
+   distinta(G,[E,I,K]),
+   distinta(H,[F,J,K]),
+   distinta(I,[G,J,K]),
+   distinta(J,[I,H,K]),
+   distinta(K,[A,B,C,D,E,F,G,H,I,J]),
+   label(Rs).
