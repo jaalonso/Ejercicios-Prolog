@@ -273,7 +273,7 @@ crecimientos_1([X,Y|L1],[X,-|L2]) :-
    X >= Y,
    crecimientos_1([Y|L1],L2).
 
-% 1ª solución (sin corte)
+% 2ª solución (con corte)
 crecimientos_2([_],[]).
 crecimientos_2([X,Y|L1],[X,+|L2]) :-
    X < Y, !,
