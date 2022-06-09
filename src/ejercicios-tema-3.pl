@@ -545,8 +545,8 @@ camino([C1,C2|L]) :-
 %          /                                 
 %         4                                  
 % 
-% Definir la relación máximo(+T,-X) que se verifiQueca si X es el máximo
-% de los nodos del árbol T. Por ejemplo,
+% Definir la relación máximo(+T,-X) que se verifica si X es el máximo de
+% los nodos del árbol T. Por ejemplo, 
 %    ?- máximo(nil,N).
 %    N = 0. 
 %    ?- máximo(t(nil,2,nil),N).
