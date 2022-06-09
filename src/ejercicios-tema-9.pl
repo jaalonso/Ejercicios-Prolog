@@ -647,3 +647,22 @@ coloración2(Rs) :-
    distinta(J,[I,H,K]),
    distinta(K,[A,B,C,D,E,F,G,H,I,J]),
    label(Rs).
+
+% ----------------------------------------------------------------------
+% Ejercicio 16. El problema de los animale es el siguiente:
+%    Un granjero tiene pollos y vacas. Sabiendo que tiene A animales, y
+%    los animales tienen P patas en total, ¿cuántos pollos tiene el
+%    granjero?
+% 
+% Definir la relación animales(A,P,X,Y) que se verifica si X es el
+% número de pollos e Y es el número de vacas sabiendo que hay A animales
+% que tienen P patas. Por ejemplo, 
+%    ?- animales(30,74,Pollos,Vacas).
+%    Pollos = 23,
+%    Vacas = 7.
+% ----------------------------------------------------------------------
+
+animales(A,P,Pollos,Vacas) :-
+   Pollos + Vacas #= A,
+   2*Pollos + 4*Vacas #= P,
+   [Pollos, Vacas] ins 0..sup.

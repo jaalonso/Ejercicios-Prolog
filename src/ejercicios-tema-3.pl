@@ -528,3 +528,37 @@ camino([C1,C2|L]) :-
 %    C3 = [1, 5],
 %    C4 = [3, 4] ;
 %    false.
+
+% ----------------------------------------------------------------------
+% Ejercicio 5. Un árbol binario es vacío o consta de tres partes: la
+% raíz (que debe de ser un número positivo), el subárbol izquierdo (que
+% debe ser un árbol binario) y el subárbol derecho (que debe ser un
+% árbol binario). Usaremos la siguiente representación 
+% + nil representa el árbol vacío
+% + t(I,R,D) representa el árbol de la raíz R, subárbol izquierdo I y
+%   subárbol derecho D.
+% Por ejemplo, el término t(t(nil,2,nil),1,t(t(nil,4,nil),3,nil))
+% representa el árbol 
+%        1                                   
+%      /   \                                 
+%     2     3                                
+%          /                                 
+%         4                                  
+% 
+% Definir la relación máximo(+T,-X) que se verifiQueca si X es el máximo
+% de los nodos del árbol T. Por ejemplo,
+%    ?- máximo(nil,N).
+%    N = 0. 
+%    ?- máximo(t(nil,2,nil),N).
+%    N = 2. 
+%    ?- máximo(t(t(nil,2,nil),3,nil),N).
+%    N = 3.
+% ----------------------------------------------------------------------
+
+máximo(nil,0).
+máximo(t(I,R,D),M):-
+   máximo(I,MI),
+   máximo(D,MD),
+   M1 is max(MI,MD),
+   M is max(R,M1).
+
