@@ -113,8 +113,8 @@ suma_pares_1([N|L],X) :-
    par(N),
    suma_pares_1(L,X1),
    X is X1 + N.
-suma_pares_1([_N|L],X) :-
-   not(par(_N)),
+suma_pares_1([N|L],X) :-
+   not(par(N)),
    suma_pares_1(L,X).
 
 par(N):-
@@ -170,7 +170,7 @@ suma_pares_3_aux([_N|L],Ac,X) :-
 %    N = 250000500000.
 
 % ------------------------------------------------------------------------------
-% Ejercicio 6: Definir el predicado exponente_de_dos(N,Exp) que se verifica si
+% Ejercicio 5. Definir el predicado exponente_de_dos(N,Exp) que se verifica si
 % E es el exponente de 2 en la descomposición de N como producto de factores
 % primos. Por ejemplo,
 %    ?- exponente_de_dos(40,E).
@@ -203,7 +203,7 @@ exponente_de_dos_2(N,E):-
 exponente_de_dos_2(_,0).
 
 % ------------------------------------------------------------------------------
-% Ejercicio 4. En los distintos apartados de este ejercicio se usará la relación
+% Ejercicio 6. En los distintos apartados de este ejercicio se usará la relación
 % conc cuya definición se muestra a continuación.
 % ------------------------------------------------------------------------------
 
@@ -211,7 +211,7 @@ conc([],L,L).
 conc([X|L1],L2,[X|L3]) :- conc(L1,L2,L3).
 
 % ------------------------------------------------------------------------------
-% Ejercicio 1. Encontrar todas las listas L tal que al concatenar L con [c,d]
+% Ejercicio 6.1. Encontrar todas las listas L tal que al concatenar L con [c,d]
 % nos devuelva [a,b,c,d].
 % ------------------------------------------------------------------------------
 
@@ -221,7 +221,7 @@ conc([X|L1],L2,[X|L3]) :- conc(L1,L2,L3).
 %    false.
 
 % ------------------------------------------------------------------------------
-% Ejercicio 4.2. Si obtener prefijos de esta forma fuera el único uso de conc en
+% Ejercicio 6.2. Si obtener prefijos de esta forma fuera el único uso de conc en
 % nuestro programa, ¿podríamos modificar su definición para mejorar la
 % eficiencia?
 % ------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ conc_1([X|RL1],L2,[X|RL3]) :- conc_1(RL1,L2,RL3).
 %    false.
 
 % ------------------------------------------------------------------------------
-% Ejercicio 4.3. ¿Serviría esa modificación para el uso general de conc?
+% Ejercicio 6.3. ¿Serviría esa modificación para el uso general de conc?
 % ------------------------------------------------------------------------------
 
 % No, por ejemplo
@@ -255,7 +255,7 @@ conc_1([X|RL1],L2,[X|RL3]) :- conc_1(RL1,L2,RL3).
 %    false.
 
 % ----------------------------------------------------------------------
-% Ejercicio 5. Definir la relación crecimientos(+L1,-L2) que se
+% Ejercicio 7. Definir la relación crecimientos(+L1,-L2) que se
 % verifique si L2 es la lista correspondientes a los crecimientos de la
 % lista numérica L1; es decir, entre cada par de elementos consecutivos
 % X e Y de L1 coloca el signo + si X < Y e y signo - en caso contrario.
@@ -282,3 +282,38 @@ crecimientos_2([X,Y|L1],[X,-|L2]) :-
    % X >= Y,
    crecimientos_2([Y|L1],L2).
 
+% ----------------------------------------------------------------------
+% Ejercicio 8.1. Definir la relación menor_divisor_propio(+N,?X) que
+% se verifique si X es el menor divisor de N mayor o igual que 2. Por
+% ejemplo,
+%    ?- menor_divisor_propio(30,X).
+%    X = 2.
+%    ?- menor_divisor_propio(3,X).
+%    X = 3.
+% ----------------------------------------------------------------------
+
+menor_divisor_propio(N,X) :-
+   N1 is floor(sqrt(N)),
+   between(2,N1,X),
+   N mod X =:= 0, !.
+menor_divisor_propio(N,N).
+
+% -----------------------------------------------------------------------
+% Ejercicio 8.2. Definir la relación factorización(+N,-L) que se
+% verifique si L es la lista correspondiente a la descomposición del
+% número N en factores primos (se considera los que elementos de L
+% están ordenados de manera creciente). Por ejemplo,
+%    ?- factorización(12,L).
+%    L = [2, 2, 3] ;
+%    false.
+%    ?- factorización(1,L).
+%    L = [] ;
+%    false.
+% ----------------------------------------------------------------------
+
+factorización(1,[]).
+factorización(N,[X|L]) :-
+   N > 1,
+   menor_divisor_propio(N,X),
+   N1 is N/X,
+   factorización(N1,L).
