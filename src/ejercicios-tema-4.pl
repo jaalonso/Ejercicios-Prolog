@@ -317,3 +317,54 @@ factorización(N,[X|L]) :-
    menor_divisor_propio(N,X),
    N1 is N/X,
    factorización(N1,L).
+
+% ----------------------------------------------------------------------   
+% Ejercicio 9. Definir la relación calcula(+N,+M,?X) que se verifique
+% si X es el menor múltiplo de N tal que la suma de sus dígitos es
+% mayor que M. Por ejemplo,
+%    ?- calcula(3,10,X).
+%    X = 39.
+%    ?- calcula(7,20,X).
+%    X = 399.
+% ----------------------------------------------------------------------
+
+calcula(N,M,X) :-
+   múltiplo(N,X),
+   suma_dígitos(X,N1),
+   N1 > M, !.
+
+% múltiplo(+N,-X) se verifica si X es un múltiplo de N. Por ejemplo,
+%    ?- múltiplo(5,X).
+%    X = 5 ;
+%    X = 10 ;
+%    X = 15
+múltiplo(N,N).
+múltiplo(N,M) :-
+   múltiplo(N,N1),
+   M is N+N1.
+
+% La relación suma_dígitos(+N,-S) se verifica si S es la suma de los
+% dígitos del número N. Por ejemplo,
+%    ?- suma_dígitos(237,S).
+%    S = 12
+suma_dígitos(N,N) :-
+   N < 10, !.
+suma_dígitos(N,S) :-
+   % N >= 10,
+   N1 is N // 10,
+   R is N - 10*N1,
+   suma_dígitos(N1,S1),
+   S is S1 + R.
+
+% 2ª definición de suma_digitos
+suma_dígitos_2(N,S) :-
+   dígitos(N,L),
+   sum_list(L,S).
+
+% dígitos(N,L) se verifica si L es la lista de los dígitos de N. Por
+% ejemplo.
+%    ?- dígitos(325,L).
+%    L = [3,2,5].
+dígitos(N,L) :-
+   name(N,L1),
+   maplist(plus(-48),L1,L).
