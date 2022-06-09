@@ -253,3 +253,32 @@ conc_1([X|RL1],L2,[X|RL3]) :- conc_1(RL1,L2,RL3).
 %    L1 = [a, b, c],
 %    L2 = [] ;
 %    false.
+
+% ----------------------------------------------------------------------
+% Ejercicio 5. Definir la relación crecimientos(+L1,-L2) que se
+% verifique si L2 es la lista correspondientes a los crecimientos de la
+% lista numérica L1; es decir, entre cada par de elementos consecutivos
+% X e Y de L1 coloca el signo + si X < Y e y signo - en caso contrario.
+% Por ejemplo,
+%    ?- crecimientos([1,3,2,2,5,3],L).
+%    L = [1, +, 3, -, 2, -, 2, +, 5, -]
+% ----------------------------------------------------------------------
+
+% 1ª solución (sin corte)
+crecimientos_1([_],[]).
+crecimientos_1([X,Y|L1],[X,+|L2]) :-
+   X < Y,
+   crecimientos_1([Y|L1],L2).
+crecimientos_1([X,Y|L1],[X,-|L2]) :-
+   X >= Y,
+   crecimientos_1([Y|L1],L2).
+
+% 1ª solución (sin corte)
+crecimientos_2([_],[]).
+crecimientos_2([X,Y|L1],[X,+|L2]) :-
+   X < Y, !,
+   crecimientos_2([Y|L1],L2).
+crecimientos_2([X,Y|L1],[X,-|L2]) :-
+   % X >= Y,
+   crecimientos_2([Y|L1],L2).
+
