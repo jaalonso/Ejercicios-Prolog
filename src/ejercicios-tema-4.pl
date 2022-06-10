@@ -576,3 +576,36 @@ comprimida_2([X,Y|L1],L2) :-
 comprimida_2([X,Y|L1],[X|L2]) :-
    % X \= Y,
    comprimida_2([Y|L1],L2).
+
+% ----------------------------------------------------------------------   
+% Ejercicio 17. Definir la relación empaquetada(+L1,-L2) que se
+% verifique si L2 es la lista obtenida sustituyendo cada sucesión de un
+% elemento de L1 por la lista formada por dicha sucesión. Por ejemplo,
+%    ?- empaquetada([a,b,b,a,a,a,c,c,b,b,b],L).
+%    L = [[a], [b, b], [a, a, a], [c, c], [b, b, b]] 
+% ----------------------------------------------------------------------
+
+empaquetada([],[]).
+empaquetada([X|L1],[L2|L3]) :-
+   empaquetada_aux(X,L1,L4,L2),
+   empaquetada(L4,L3).
+
+% empaquetada_aux(X,L1,L4,L2) se verifica si L4 es la lista obtenida
+% eliminando en L1 todas las ocurrencias iniciales de X y L2 es la
+% lista formada por X y las ocurrencias iniciales de X en L1; por
+% ejemplo,
+%    ?- empaquetada_aux(a,[a,a,c,c,b,b,b],L4,L2).
+%    L4 = [c, c, b, b, b]
+%    L2 = [a, a, a] 
+empaquetada_aux(X,[],[],[X]).
+empaquetada_aux(X,[X|L1],L4,[X|L2]) :-
+   empaquetada_aux(X,L1,L4,L2).
+empaquetada_aux(X,[Y|L1],[Y|L1],[X]) :-
+   X \= Y.
+
+% La definición anterior puede transformarse introduciendo corte en
+empaquetada_aux_2(X,[],[],[X]).
+empaquetada_aux_2(X,[X|L1],L4,[X|L2]) :-
+   !,
+   empaquetada_aux_2(X,L1,L4,L2).
+empaquetada_aux_2(X,[Y|L1],[Y|L1],[X]).
