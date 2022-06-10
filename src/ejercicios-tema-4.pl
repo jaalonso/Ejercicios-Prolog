@@ -368,3 +368,25 @@ suma_dígitos_2(N,S) :-
 dígitos(N,L) :-
    name(N,L1),
    maplist(plus(-48),L1,L).
+
+% ----------------------------------------------------------------------   
+% Ejercicio 10. Un número es libre de cuadrados si no es divisible por
+% el cuadrado de ningún número mayor que 1.
+% 
+% Definir la relación libre_de_cuadrados(+N) que se verifique si el
+% número N es libre de cuadrados. Por ejemplo,
+%    ?- libre_de_cuadrados(30).
+%    true.
+%    ?- libre_de_cuadrados(12).
+%    false.
+% ----------------------------------------------------------------------
+
+% 1ª solución
+libre_de_cuadrados(N) :-
+   M is floor(sqrt(N)),
+   not((between(2,M,X), N mod (X*X) =:= 0)).
+
+% 2ª solución
+libre_de_cuadrados_2(N) :-
+   M is floor(sqrt(N)),
+   forall(between(2,M,X), N mod (X*X) =\= 0).
