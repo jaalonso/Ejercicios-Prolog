@@ -508,5 +508,17 @@ repetidos_2([_X|L1],L2) :-
    % not(memberchk(_X,L1)),
    repetidos_2(L1,L2).
 
-
-
+% --------------------------------------------------------------------
+% *Ejercicio 14.* Definir la relación subconjunto_maximal(+L1,-L2) que
+% se verifica si L2 es un subconjunto maximal de L1 (es decir, es un
+% conjunto de elementos de L1 tal que sólo existe un elemento de L1 que
+% no pertenece a L2). Por ejemplo,
+%    ?- subconjunto_maximal([c,b,a,b,c,a,c],L).
+%    L = [b,a] ;
+%    L = [c,a] ;
+%    L = [c,b].
+% --------------------------------------------------------------------
+  
+subconjunto_maximal(L1,L2) :-
+   list_to_set(L1,L3),
+   select(_,L3,L2).
