@@ -549,3 +549,30 @@ elemento_y_resto(N,L1,X,L2) :-
    length(L,N),
    append(L,L2,L1),
    last(L,X).
+
+% ----------------------------------------------------------------------
+% Ejercicio 16. Definir la relación comprimida(+L1,-L2) que se verifique
+% si L2 es la lista obtenida sustituyendo cada sucesión de un elemento
+% de L1 por dicho elemento. Por ejemplo,
+%    ?- comprimida([a,b,b,a,a,a,c,c,b,b,b],L).
+%    L = [a, b, a, c, b] 
+% ----------------------------------------------------------------------
+
+% 1ª solución (sin corte)
+comprimida([],[]).
+comprimida([X],[X]).
+comprimida([X,X|L1],L2) :-
+   comprimida([X|L1],L2).
+comprimida([X,Y|L1],[X|L2]) :-
+   X \= Y,
+   comprimida([Y|L1],L2).
+
+% 2ª solución (con corte)
+comprimida_2([],[]).
+comprimida_2([X],[X]).
+comprimida_2([X,Y|L1],L2) :-
+   X = Y, !,
+   comprimida_2([X|L1],L2).
+comprimida_2([X,Y|L1],[X|L2]) :-
+   % X \= Y,
+   comprimida_2([Y|L1],L2).
