@@ -448,4 +448,65 @@ longitud_scm([X|L1],[Y|L2],N) :-
    longitud_scm([X|L1],L2,N2),
    N is max(N1,N2).
 
+% ----------------------------------------------------------------------
+% Ejercicio 13.1. Definir la relación repetido(-A,+L) que se verifique
+% si el elemento A está repetido (i.e. ocurre más de una vez) en la
+% lista L. Por ejemplo,
+%    ?- repetido(A,[1,2,1,3,4,3]).
+%    A = 1 ;
+%    A = 1 ;
+%    A = 3 ;
+%    A = 3.
+%    ?- repetido(A,[1,2,5]).
+%    false.
+% ----------------------------------------------------------------------
+
+repetido(A,L) :-
+   select(A,L,R),
+   memberchk(A,R).
+
+% ----------------------------------------------------------------------
+% Ejercicio 13.2. Definir la relación elimina(+X,+L1,-L2) que se
+% verifique si L2 es la lista obtenida eliminando todas las ocurrencias
+% de X en la lista L1. Por ejemplo,
+%    ?- elimina(a,[1,a,b,3,a,a,4,a,c],L).
+%    L = [1, b, 3, 4, c]
+% ----------------------------------------------------------------------
+
+elimina(_,[],[]).
+elimina(X,[X|L1],L2) :-
+   elimina(X,L1,L2).
+elimina(X,[Y|L1],[Y|L2]) :-
+   X \= Y,
+   elimina(X,L1,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 13.3. Definir la relación repetidos(+L1,-L2) que se
+% verifique si L2 es la lista de los elementos repetidos de la lista
+% L1. Por ejemplo, 
+%   ?- repetidos([1,2,4,3,4,1,3,5],L).
+%   L = [1, 4, 3] 
+% ----------------------------------------------------------------------
+
+% 1ª solución
+repetidos_1([],[]).
+repetidos_1([X|L1],[X|L2]) :-
+   memberchk(X,L1), 
+   elimina(X,L1,L3),
+   repetidos_1(L3,L2).
+repetidos_1([X|L1],L2) :-
+   not(memberchk(X,L1)),
+   repetidos_1(L1,L2).
+
+% 2ª solución
+repetidos_2([],[]).
+repetidos_2([X|L1],[X|L2]) :-
+   memberchk(X,L1), !,
+   elimina(X,L1,L3),
+   repetidos_2(L3,L2).
+repetidos_2([_X|L1],L2) :-
+   % not(memberchk(_X,L1)),
+   repetidos_2(L1,L2).
+
+
 
