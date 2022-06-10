@@ -509,7 +509,7 @@ repetidos_2([_X|L1],L2) :-
    repetidos_2(L1,L2).
 
 % --------------------------------------------------------------------
-% *Ejercicio 14.* Definir la relación subconjunto_maximal(+L1,-L2) que
+% Ejercicio 14. Definir la relación subconjunto_maximal(+L1,-L2) que
 % se verifica si L2 es un subconjunto maximal de L1 (es decir, es un
 % conjunto de elementos de L1 tal que sólo existe un elemento de L1 que
 % no pertenece a L2). Por ejemplo,
@@ -522,3 +522,30 @@ repetidos_2([_X|L1],L2) :-
 subconjunto_maximal(L1,L2) :-
    list_to_set(L1,L3),
    select(_,L3,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 15. % Definir la relación suma_posiciones(+N,+L,-S) que se
+% verifique si S es la suma de los elementos de la lista que ocupan las
+% posiciones que son múltiplos de N. Por ejemplo,
+%   ?- suma_posiciones(2,[3,5,7,9,1,2],S).
+%   S = 16.
+%   ?- suma_posiciones(3,[3,5,7,9,1,2],S).
+%   S = 9.
+% ----------------------------------------------------------------------
+
+suma_posiciones(N,L,S) :-
+   elemento_y_resto(N,L,X,L1), !,
+   suma_posiciones(N,L1,S1),
+   S is X+S1.
+suma_posiciones(_,_,0).
+
+% elemento_y_resto(+N,+L1,-X,-L2) se verifica si X es el elemento
+% N-ésimo de L1 y L2 es la lista L1 a partir del elemento X. Por
+% ejemplo,
+%   ?- elemento_y_resto(3,[3,5,7,9,1,2],X,L).
+%   X = 7
+%   L = [9, 1, 2]. 
+elemento_y_resto(N,L1,X,L2) :-
+   length(L,N),
+   append(L,L2,L1),
+   last(L,X).
