@@ -390,3 +390,37 @@ libre_de_cuadrados(N) :-
 libre_de_cuadrados_2(N) :-
    M is floor(sqrt(N)),
    forall(between(2,M,X), N mod (X*X) =\= 0).
+
+% ----------------------------------------------------------------------
+% Ejercicio 11. Definir la relación suma_libres_de_cuadrados(+L,-S) que
+% se verifique si S es la suma de los números libres de cuadrados la
+% lista numérica L. Por ejemplo,
+%    ?- suma_libres_de_cuadrados([6,12,18,30],S).
+%    S = 36.
+% ----------------------------------------------------------------------
+
+% 1ª solución (sin cortes)
+suma_libres_de_cuadrados_1([],0).
+suma_libres_de_cuadrados_1([X|L],S) :-
+   libre_de_cuadrados(X),
+   suma_libres_de_cuadrados_1(L,S1),
+   S is X+S1.
+suma_libres_de_cuadrados_1([X|L],S) :-
+   not(libre_de_cuadrados(X)),
+   suma_libres_de_cuadrados_1(L,S).
+
+% 2ª solución (con cortes)
+suma_libres_de_cuadrados_2([],0).
+suma_libres_de_cuadrados_2([X|L],S) :-
+   libre_de_cuadrados(X), !,
+   suma_libres_de_cuadrados_2(L,S1),
+   S is X+S1.
+suma_libres_de_cuadrados_2([_X|L],S) :-
+   % not(libre_de_cuadrados(_X)),
+   suma_libres_de_cuadrados_2(L,S).
+
+% 3ª solución
+suma_libres_de_cuadrados_3(L,S) :-
+   include(libre_de_cuadrados, L, L1),
+   sum_list(L1,S).
+           
