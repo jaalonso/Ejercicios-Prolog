@@ -423,4 +423,29 @@ suma_libres_de_cuadrados_2([_X|L],S) :-
 suma_libres_de_cuadrados_3(L,S) :-
    include(libre_de_cuadrados, L, L1),
    sum_list(L1,S).
-           
+
+% ----------------------------------------------------------------------
+% Ejercicio 12. Definir la relación longitud_scm(+L1,+L2,-N) que se
+% verifique si N es la longitud de las subsucesiones comunes maximales
+% de las listas L1 y L2. Por ejemplo,
+%    ?- longitud_scm([2,1,4,5,2,3,5,2,4,3],[1,7,5,3,2],N).
+%    N = 4 ;
+%    false.
+% ya que [1,5,3,2] es una subsucesión de las dos listas y no poseen
+% ninguna otra subsucesión común de mayor longitud. Obsérvese que los
+% elementos de la subsucesión no son necesariamente elementos adyacentes
+% en las listas.
+% ----------------------------------------------------------------------
+
+longitud_scm([],_,0).
+longitud_scm(_,[],0).
+longitud_scm([X|L1],[X|L2],N) :-
+   !, longitud_scm(L1,L2,M),
+   N is M+1.
+longitud_scm([X|L1],[Y|L2],N) :-
+   % X \= Y,
+   longitud_scm(L1,[Y|L2],N1),
+   longitud_scm([X|L1],L2,N2),
+   N is max(N1,N2).
+
+
