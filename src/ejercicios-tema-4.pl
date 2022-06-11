@@ -646,3 +646,46 @@ codificada_2(L1,L2) :-
 codificada_aux_2(L1,L2) :-
    bagof(N-X, X^L3^(member([X|L3],L1), length([X|L3],N)), L2).
 
+% ----------------------------------------------------------------------
+% Ejercicio 19. Definir la relación codificada_reducida(+L1,-L2) que se
+% verifique si L2 es la codificación reducida por longitud de la lista
+% L1; es decir, las sucesiones de un mismo elemento X de L1 se codifican
+% por términos de la forma N-X donde N es la longitud de la sucesión
+% cuando N es mayor que 1 y por X cuando N es igual a 1. Por ejemplo,
+%    ?- codificada_reducida([a,b,b,a,a,a,c,b,b,b],L).
+%    L = [a, 2-b, 3-a, c, 3-b] 
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+codificada_reducida_1(L1,L2) :-
+   codificada(L1,L),
+   codificada_reducida_aux(L,L2).
+
+% codificada_reducida_aux(+L1,-L2) se verifica si L2 es la lista
+% obtenida transformando los elementos de L1 de la forma 1-X por X y
+% dejando los restantes elementos de la misma forma (se supone que L1 es
+% una lista de la forma [N1-E1,...,Nm-Em]). Por ejemplo,
+%    ?- codificada_reducida_aux([1-a,2-b,3-a,1-c,3-b],L). 
+%    L = [a, 2-b, 3-a, c, 3-b] 
+codificada_reducida_aux([],[]).
+codificada_reducida_aux([1-X|L1],[X|L2]) :-
+   codificada_reducida_aux(L1,L2).
+codificada_reducida_aux([N-X|L1],[N-X|L2]) :-
+   N > 1,
+   codificada_reducida_aux(L1,L2).
+
+% 2ª solución
+% ===========
+
+codificada_reducida_2(L1,L2) :-
+   codificada(L1,L),
+   codificada_reducida_aux_2(L,L2).
+
+codificada_reducida_aux_2([],[]).
+codificada_reducida_aux_2([1-X|L1],[X|L2]) :- !,
+codificada_reducida_aux_2(L1,L2).
+codificada_reducida_aux_2([N-X|L1],[N-X|L2]) :-
+   % N > 1,
+   codificada_reducida_aux_2(L1,L2).
