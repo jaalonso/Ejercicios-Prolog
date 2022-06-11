@@ -691,7 +691,7 @@ codificada_reducida_aux_2([N-X|L1],[N-X|L2]) :-
    codificada_reducida_aux_2(L1,L2).
 
 % ----------------------------------------------------------------------
-% Ejercicio 10. Definir la relación decodificada(+L1,-L2) que, dada la
+% Ejercicio 20. Definir la relación decodificada(+L1,-L2) que, dada la
 % lista L1, devuelve la lista L2 cuya codificación reducida por longitud
 % es L1. Por ejemplo,
 %    ?- decodificada([a,2-b,3-a,c,3-b],L). 
@@ -710,3 +710,66 @@ decodificada([N-X|L1],[X|L2]) :-
 decodificada([X|L1],[X|L2]) :-
    % X es atómico
    decodificada(L1,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 21.1. Definir la relación diente(+L,-L1,-X,-L2) que se
+% verifique si L se compone de una lista L1 de números estrictamente
+% creciente hasta un cierto número X que llamaremos cima, de la cima y
+% de una lista L2 de números estrictamente decreciente. Las listas tiene
+% L1 y L2 tienen que ser no vacías y la cima X es el mayor elemento de
+% L. Por ejemplo,
+%    ?- diente([1,2,5,4,3,1],L1,X,L2).
+%    L1 = [1, 2]
+%    X = 5
+%    L2 = [4, 3, 1] ;
+%    false.
+%    ?- diente([1,2,5],L1,X,L2).
+%    false.
+% 
+% Las listas que poseen esta forma de descomposición se llaman dientes.
+% ----------------------------------------------------------------------
+
+diente(L,[X1|L1],X,[X2|L2]) :-
+   append([X1|L1],[X,X2|L2],L),
+   creciente([X1|L1]),
+   last([X1|L1],Y),
+   Y < X,
+   decreciente([X,X2|L2]).
+
+% creciente(+L) se verifica si la lista de números L es estrictamente
+% creciente.
+creciente([_]).
+creciente([A,B|L]) :-
+   A < B,
+   creciente([B|L]).
+
+% decreciente(+L) se verifica si la lista de números L es estrictamente
+% decreciente.
+decreciente([_]).
+decreciente([A,B|L]) :-
+   A > B,
+   decreciente([B|L]).
+
+% ----------------------------------------------------------------------
+% Ejercicio 21.2. Una sierra es una lista numérica compuesta por la
+% yuxtaposición de dientes. Nótese que dos dientes consecutivos deben
+% compartir un elemento. Por ejemplo [1,2,1,3,1] es una sierra compuesta
+% por los dientes [1,2,1] y [1,3,1], pero [1,2,1,1,3,1] no es una
+% sierra.
+% 
+% Definir la relación dientes_de_sierra(+L1,?L2) que se verifique si L1
+% es una sierra y L2 es la lista de los dientes de L1. Por ejemplo,
+%    ?- dientes_de_sierra([1,2,1,3,1],L).
+%    L = [[1, 2, 1], [1, 3, 1]] ;
+%    false.
+%    ?- dientes_de_sierra([1,2,1,1,3,1],L).
+%    false.
+% ----------------------------------------------------------------------
+
+dientes_de_sierra(L,[L]) :-
+   diente(L,_,_,_), !.
+dientes_de_sierra(L,[L1|R]) :-
+   append(L1,L2,L),
+   diente(L1,_,_,_), 
+   last(L1,X),
+   dientes_de_sierra([X|L2],R).
