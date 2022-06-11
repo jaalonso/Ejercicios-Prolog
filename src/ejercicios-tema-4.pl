@@ -689,3 +689,24 @@ codificada_reducida_aux_2(L1,L2).
 codificada_reducida_aux_2([N-X|L1],[N-X|L2]) :-
    % N > 1,
    codificada_reducida_aux_2(L1,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 10. Definir la relación decodificada(+L1,-L2) que, dada la
+% lista L1, devuelve la lista L2 cuya codificación reducida por longitud
+% es L1. Por ejemplo,
+%    ?- decodificada([a,2-b,3-a,c,3-b],L). 
+%    L = [a, b, b, a, a, a, c, b, b, b] 
+% ----------------------------------------------------------------------
+
+decodificada([],[]).
+decodificada([1-X|L1],[X|L2]) :-
+   !,
+   decodificada(L1,L2).
+decodificada([N-X|L1],[X|L2]) :-
+   % N > 1,
+   !,
+   N1 is N - 1,
+   decodificada([N1-X|L1],L2).
+decodificada([X|L1],[X|L2]) :-
+   % X es atómico
+   decodificada(L1,L2).
