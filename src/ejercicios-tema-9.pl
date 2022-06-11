@@ -649,7 +649,7 @@ coloración2(Rs) :-
    label(Rs).
 
 % ----------------------------------------------------------------------
-% Ejercicio 16. El problema de los animale es el siguiente:
+% Ejercicio 16. El problema de los animales es el siguiente:
 %    Un granjero tiene pollos y vacas. Sabiendo que tiene A animales, y
 %    los animales tienen P patas en total, ¿cuántos pollos tiene el
 %    granjero?
@@ -699,3 +699,35 @@ máximo(t(I,R,D),M):-
    máximo(D,MD),
    M1 #= max(MI,MD),
    M #= max(R,M1).
+
+% ----------------------------------------------------------------------
+% Ejercicio 18. Definir la relación cota_superior(+L,N) que se verifique
+% si N es una cota superior de L (es decir, todos los elementos de L son
+% menores o iguales que N). Por ejemplo,
+%    ?- cota_superior([1,5,3],7).
+%    true.
+%    
+%    ?- cota_superior([1,5,3],5).
+%    true.
+%    
+%    ?- cota_superior([1,5,3],4).
+%    false.
+%    
+%    ?- cota_superior([1,5,3],X).
+%    X in 5..sup.
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+cota_superior_1([],_).
+cota_superior_1([X|L],N) :-
+   X #=< N,
+   cota_superior_1(L,N).
+
+% 2ª solución
+% ===========
+
+cota_superior_2(L,N) :-
+   max_list(L,M),
+   N #>= M.
