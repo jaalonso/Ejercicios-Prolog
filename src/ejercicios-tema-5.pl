@@ -462,3 +462,95 @@ cuenta(A,[B|L],N) :-
 cuenta(A,[_B|L],N) :-
    % A \== _B,
    cuenta(A,L,N).
+
+% ----------------------------------------------------------------------
+% Ejercicio 16.1. Consideremos la función siguiente definida sobre los
+% números naturales: 
+% f(x) = 3x + 1, si x es impar;
+%        x / 2,  si x es par
+% 
+% Definir la relación sucesión(+X,?L) que se verifique si L es la lista
+% de los elementos X, f(X), f(f(X)), ..., f^n(X) tal que f^n(X) = 1. Por
+% ejemplo,
+%    ?- sucesión(3,L).
+%    L = [3, 10, 5, 16, 8, 4, 2, 1]
+% 
+% L se llama la sucesión generada por X.
+% ----------------------------------------------------------------------
+
+f(X,Y) :-
+   X mod 2 =:= 0, !,
+   Y is X/2.
+f(X,Y) :-
+   % X mod 2 =/= 0,
+   Y is 3*X+1.
+
+sucesión(1,[1]) :- !.
+sucesión(X,[X|L]) :-
+   % X =/= 1,
+   f(X,Y),
+   sucesión(Y,L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 16.2. Definir la relación longitudes(+X,?L) que se verifica
+% si L la lista de pares Y-N donde Y es un número de 1 a X y N es la
+% longitud de sucesión generada por Y. Por ejemplo,
+%    ?- longitudes(5,L).
+%    L = [1-1, 2-2, 3-8, 4-3, 5-6] 
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+longitudes(X,L) :-
+   longitudes_aux(X,L1),
+   reverse(L1,L).
+longitudes_aux(1,[1-N]) :-
+   !,
+   sucesión(1,L),
+   length(L,N).
+longitudes_aux(X,[X-N|L]) :-
+   % X > 1,
+   sucesión(X,L1),
+   length(L1,N),
+   Y is X-1,
+   longitudes_aux(Y,L).
+
+% 2ª solución
+% ===========
+
+longitudes_2(X,L) :-
+   findall(Y-N,(between(1,X,Y),sucesión(Y,S),length(S,N)),L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 16.3. Definir la relación longitud_máx(+X,?P) que se
+% verifica si P es un par de la forma Y-N donde Y es un número entre 1 y
+% X tal que la longitud de la sucesión generada por Y es la más larga de
+% las sucesiones generadas por 1, 2, ..., X y N es la longitud de dicha
+% sucesión. Por ejemplo,
+%    ?- longitud_máx(10,L).
+%    L = 9-20
+% ----------------------------------------------------------------------
+
+longitud_máx(X,Y-N) :-
+   longitudes(X,L),
+   member(Y-N,L),
+   \+ (member(_Z-M,L), M > N).
+
+% ----------------------------------------------------------------------
+% Ejercicio 16.4. Definir menor_que_genera_mayor(+N,-M) que se verifique
+% si M es el menor número natural tal que la longitud de la sucesión
+% generada por M es mayor que N. Por ejemplo,
+%    ?- menor_que_genera_mayor(100,N).
+%    N = 27.
+% ----------------------------------------------------------------------
+
+menor_que_genera_mayor(N,M) :-
+   menor_que_genera_mayor_aux(N,1,M).
+menor_que_genera_mayor_aux(N,M,M) :-
+   sucesión(M,L),
+   length(L,X),
+   X > N, !.
+menor_que_genera_mayor_aux(N,X,M) :-
+   Y is X+1,
+   menor_que_genera_mayor_aux(N,Y,M).
