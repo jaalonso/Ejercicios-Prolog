@@ -409,3 +409,26 @@ elimina_raices([nil|L1],L2):-
    elimina_raices(L1,L2).
 elimina_raices([t(I,_,D)|L1],[I,D|L2]):-
    elimina_raices(L1,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 14. Definir la relación únicos(+L1,-L2) que se verifique si
+% L2 es la lista de los elementos que ocurren solamente una vez en la
+% lista L1. Por ejemplo,
+%    ?- únicos([2,5,3,2],L).
+%    L = [5, 3] 
+%    ?- únicos([2,5,5,2],L).
+%    L = [] 
+% ----------------------------------------------------------------------
+
+únicos(L1,L2) :-
+   findall(X,es_único(X,L1),L2).
+
+% es_único(?X,+L) se verifica si X es un elemento que ocurre solamente
+% una vez en la lista L. Por ejemplo,
+%    ?- es_único(X,[2,5,3,2]).
+%    X = 5 ;
+%    X = 3 ;
+%    false.
+es_único(X,L) :-
+   select(X,L,R),
+   not(memberchk(X,R)).
