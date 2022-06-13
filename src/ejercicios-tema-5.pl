@@ -432,3 +432,33 @@ elimina_raices([t(I,_,D)|L1],[I,D|L2]):-
 es_único(X,L) :-
    select(X,L,R),
    not(memberchk(X,R)).
+
+% ----------------------------------------------------------------------
+% Ejercicio 15. Definir el predicado populares(L1,L2) que se verifique
+% si L2 es la lista de los elementos de L1 que aparecen el mayor
+% número de veces. Por ejemplo,
+%    ?- populares([rosa,juan,david,manu,rosa,nuria,david],L).
+%    L = [david,rosa]
+% ----------------------------------------------------------------------
+
+populares(L1,L2) :-
+   setof(X,
+         ((member(X,L1),
+           cuenta(X,L1,N1),
+           not((member(Y,L1),
+                cuenta(Y,L1,N2),
+                N1 < N2)))),
+         L2).
+
+% cuenta(+X,+L,-N) se verifica si N es el número de veces que aparece el
+% elemento X en la lista L. Por ejemplo,
+%    ?- cuenta(d,[r,j,d,m,r,n,d],N).
+%    N = 2
+cuenta(_,[],0).
+cuenta(A,[B|L],N) :-
+   A == B, !,
+   cuenta(A,L,M),
+   N is M+1.
+cuenta(A,[_B|L],N) :-
+   % A \== _B,
+   cuenta(A,L,N).
