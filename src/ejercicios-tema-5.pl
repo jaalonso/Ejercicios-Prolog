@@ -267,3 +267,145 @@ invierte_palabra(P1,P2) :-
     name(P1,L1),
     reverse(L1,L2),
     name(P2,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 12. Definir la relación factorial_inverso(+X,-N) que se
+% verifique si X es el factorial de N. Por ejemplo,
+%    ?- factorial_inverso(120,N).
+%    N = 5 ;
+%    false.
+%    ?- factorial_inverso(80,N).
+%    false.
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+factorial_inverso_1(X,N) :-
+   factorial_inverso_1_aux(X,1,N).
+
+% factorial_inverso_1_aux(+X,+A,-N) se verifica si N es el menor número
+% mayor o igual que A cuyo factorial es X.
+factorial_inverso_1_aux(X,A,A) :-
+   factorial(A,X).
+factorial_inverso_1_aux(X,A,N) :-
+   factorial(A,N1),
+   N1 < X,
+   A1 is A + 1,
+   factorial_inverso_1_aux(X,A1,N).
+
+% factorial(+N,-X) se verifica si X es el factorial de N. 
+factorial(1,1).
+factorial(N,X) :-
+   N > 1,
+   N1 is N-1,
+   factorial(N1,X1),
+   X is X1 * N.
+
+% 2ª solución (con memorización)
+% ==============================
+
+factorial_inverso_2(X,N) :-
+   factorial_inverso_2_aux(X,1,N).
+
+% factorial_inverso_2_aux(+X,+A,-N) se verifica si N es el menor número
+% mayor o igual que A cuyo factorial (con memoria) es X.
+factorial_inverso_2_aux(X,A,A) :-
+   factorial_con_memoria(A,X).
+factorial_inverso_2_aux(X,A,N) :-
+   factorial_con_memoria(A,N1),
+   N1 < X,
+   C1 is A + 1,
+   factorial_inverso_2_aux(X,C1,N).
+
+% factorial_con_memoria(+N,-X) se verifica si X es el factorial de
+% N. Además almacena en la base de datos internas los factoriales
+% calculados.
+:- dynamic factorial_con_memoria/2.
+
+factorial_con_memoria(1,1).
+factorial_con_memoria(N,X) :-
+   N > 1,
+   N1 is N-1,
+   factorial_con_memoria(N1,X1),
+   X is X1 * N,
+   asserta(factorial_con_memoria(N,X) :- !).
+
+% 3ª solución (con dos acumuladores)
+% ==================================
+
+factorial_inverso_3(X,N) :-
+   factorial_inverso_aux_3(X,1,1,N).
+
+% factorial_inverso_aux_3(+X,+A,+F,-N) se verifica si X = A*(A+1)*...*N
+% (de forma que si A = 1 entonces X = N!).
+factorial_inverso_aux_3(X,A,F,A) :-
+   A*F =:= X.
+factorial_inverso_aux_3(X,A,F,N) :-
+   F1 is A*F,
+   F1 < X, !,
+   A1 is A + 1,
+   factorial_inverso_aux_3(X,A1,F1,N).
+
+% Comparación de eficiencia
+%    ?- factorial(2000,_X), time(factorial_inverso_1(_X,_N)).
+%    % 11,997,999 inferences, 2.921 CPU in 2.925 seconds (100% CPU, 4106828 Lips)
+%    true 
+%    ?- factorial(2000,_X), time(factorial_inverso_2(_X,_N)).
+%    % 13,993 inferences, 0.004 CPU in 0.004 seconds (100% CPU, 3832958 Lips)
+%    true 
+%    ?- factorial(2000,_X), time(factorial_inverso_3(_X,_N)).
+%    % 7,997 inferences, 0.009 CPU in 0.009 seconds (100% CPU, 877368 Lips)
+%    true 
+%    
+%    ?- factorial(4000,_X), time(factorial_inverso_2(_X,_N)).
+%    % 35,993 inferences, 0.035 CPU in 0.035 seconds (100% CPU, 1035996 Lips)
+%    true 
+%    ?- factorial(4000,_X), time(factorial_inverso_3(_X,_N)).
+%    % 15,997 inferences, 0.022 CPU in 0.022 seconds (100% CPU, 716325 Lips)
+%    true 
+
+% ----------------------------------------------------------------------
+% Ejercicio 13. Un árbol binario es vacío o consta de tres partes: la
+% raíz (que debe de ser un número positivo), el subárbol izquierdo (que
+% debe ser un árbol binario) y el subárbol derecho (que debe ser un
+% árbol binario). Usaremos la siguiente representación
+% + nil representa el árbol vacío
+% + t(I,R,D) representa el árbol de la raíz R, subárbol izquierdo I y
+%   subárbol derecho D.
+% Por ejemplo, t(t(nil,2,nil),1,t(t(nil,4,nil),3,nil)) representa el árbol
+%       1                                   
+%     /   \                                 
+%    2     3                                
+%         /                                 
+%        4                                  
+% 
+% Definir la relación generación(+N,+L1,-L2) que se verifique si L2 es
+% la lista de nodos de la generación N de la lista de árboles L1. Por
+% ejemplo,
+%    ?- generación(0,[t(t(nil,2,nil),3,nil),t(nil,4,t(nil,5,nil))],L).
+%    L = [3, 4] 
+%    ?- generación(1,[t(t(nil,2,nil),3,nil),t(nil,4,t(nil,5,nil))],L).
+%    L = [2, 5] 
+%    ?- generación(2,[t(t(nil,2,nil),3,nil),t(nil,4,t(nil,5,nil))],L).
+%    L = [] 
+% ----------------------------------------------------------------------
+
+generación(0,L,G):-
+   findall(R,member(t(_,R,_),L),G).
+generación(N,L,G):-
+   N > 0,
+   elimina_raices(L,L1),
+   N1 is N-1,
+   generación(N1,L1,G).
+
+% elimina_raices(+L1,-L2) se verifica si L2 es la lista de los árboles
+% obtenidos de la lista de árboles L1 eliminando sus raices. Por
+% ejemplo,
+%    ?- elimina_raices([t(t(nil,2,nil),3,nil),t(nil,4,t(nil,5,nil))],L).
+%    L = [t(nil, 2, nil), nil, nil, t(nil, 5, nil)] 
+elimina_raices([],[]).
+elimina_raices([nil|L1],L2):-
+   elimina_raices(L1,L2).
+elimina_raices([t(I,_,D)|L1],[I,D|L2]):-
+   elimina_raices(L1,L2).
