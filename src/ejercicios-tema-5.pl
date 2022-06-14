@@ -90,8 +90,20 @@ genera_primo(X,Y,L) :-
 %    ?- genera_primo(41,41,L).
 %    L = [].
 
+% ----------------------------------------------------------------------
+% Ejercicio 4.1. Definir la relación divisores_propios(+N,-L) que se
+% verifique si L es la lista ordenada de los divisores propios del
+% número N. Por ejemplo,
+%    ?- divisores_propios(42,L).
+%    L = [1, 2, 3, 6, 7, 14, 21] 
+% ----------------------------------------------------------------------
+
+divisores_propios(N,L) :-
+   N1 is N -1,
+   findall(X,(between(1,N1,X), 0 =:= N mod X),L).
+
 % ------------------------------------------------------------------------------
-% Ejercicio 4: Se dice que dos números X e Y son amigos cuando X es igual a la
+% Ejercicio 4.2 Se dice que dos números X e Y son amigos cuando X es igual a la
 % suma de los divisores de Y (exceptuando al propio Y) y viceversa. Por
 % ejemplo, 6 es amigo de sí mismo puesto que los divisores de 6 (exceptuando al
 % 6) son 1, 2 y 3 y 6=1+2+3. Igualmente 28 es amigo de sí mismo, puesto que
@@ -112,10 +124,6 @@ amigos(A,B,L) :-
                   divisores_propios(Y,Dy),
                   sumlist(Dy,X))),
            L).
-
-divisores_propios(X,L) :-
-   X1 is X-1,
-   findall(N,((between(1,X1,N), X mod N =:= 0)),L).
 
 % ------------------------------------------------------------------------------
 % Ejercicio 5. Definir la relación lista_a_conjunto(+L,-C) que se verifica si C
@@ -554,3 +562,116 @@ menor_que_genera_mayor_aux(N,M,M) :-
 menor_que_genera_mayor_aux(N,X,M) :-
    Y is X+1,
    menor_que_genera_mayor_aux(N,Y,M).
+
+% ----------------------------------------------------------------------
+% Ejercicio 17.1. Definir la relación suma_divisores_propios(+N,-S) que
+% se verifique si S es la suma de los divisores propios del número
+% N. Por ejemplo,
+%    ?- suma_divisores_propios(42,S).o
+%    S = 54.
+%    ?- suma_divisores_propios(1,S).
+%    S = 0. 
+% ----------------------------------------------------------------------
+
+suma_divisores_propios(N,S) :-
+   divisores_propios(N,L),
+   sum_list(L,S).
+
+% ----------------------------------------------------------------------
+% Ejercicio 17.2. Clasificamos los números naturales en tres tipos:
+% + N es de tipo a si N es mayor que la suma de sus divisores propios
+% + N es de tipo b si N es igual que la suma de sus divisores propios
+% + N es de tipo c si N es menor que la suma de sus divisores propios
+% 
+% Definir la relación tipo(+N,-T) que se verifique si T es el tipo del
+% número N. Por ejemplo,
+%    ?- tipo(10,T).
+%    T = a 
+%    ?- tipo(28,T).
+%    T = b 
+%    ?- tipo(12,T).
+%    T = c 
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+tipo(N,T) :-
+   suma_divisores_propios(N,S),
+   tipo_aux(N,S,T).
+
+tipo_aux(N,S,a) :- N > S, !. 
+tipo_aux(N,N,b) :- !.
+tipo_aux(_N,_S,c). % :- _N < _S.
+
+% 2ª solución
+% ===========
+
+tipo_2(N,T) :-
+   suma_divisores_propios(N,S),
+   ( N > S   -> T = a ;
+     N =:= S -> T = b ;
+     true    -> T = c).
+
+% ----------------------------------------------------------------------
+% Ejercicio 17.3. Definir la relación clasifica(+N,-L) que se verifique
+% si L es la lista de tipos de los números comprendidos entre 1 y N. Por
+% ejemplo, 
+%   ?- clasifica(20,L).
+%   L = [a, a, a, a, a, b, a, a, a, a, a, c, a, a, a, a, a, c, a, c] 
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+clasifica(N,L) :-
+   findall(T,(between(1,N,X),tipo(X,T)),L).
+
+% 2ª solución
+% ===========
+
+clasifica_2(N,L) :-
+   numlist(1,N,L1),
+   maplist(tipo,L1,L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 17.4. Definir la relación promedio(+N,-A,-B,-C) que se
+% verifique si A, B y C son las cantidades de números naturales menores
+% o iguales que N de tipo a, b y c, respectivamente. Por ejemplo,
+%    ?- promedio(20,A,B,C).
+%    A = 16,
+%    B = 1,
+%    C = 3.
+% ----------------------------------------------------------------------
+
+promedio(N,A,B,C) :-
+   clasifica(N,L),
+   promedio_aux(L,A,B,C).
+
+promedio_aux([],0,0,0).
+promedio_aux([a|L],A1,B,C) :-
+   promedio_aux(L,A,B,C),
+   A1 is A+1.
+promedio_aux([b|L],A,B1,C) :-
+   promedio_aux(L,A,B,C),
+   B1 is B+1.
+promedio_aux([c|L],A,B,C1) :-
+   promedio_aux(L,A,B,C),
+   C1 is C+1.
+
+% ----------------------------------------------------------------------
+% Ejercicio 17.5. Definir la relación menor(+N,-X) que se verifique si X
+% es el menor número tal que la cantidad de números naturales menores o
+% iguales que X de tipo a es N. Por ejemplo,
+%    ?- menor(20,X).
+%    X = 25.
+% ----------------------------------------------------------------------
+
+menor(N,X) :-
+   menor_aux(N,N,X).
+
+menor_aux(N,M,M) :-
+   promedio(M,N,_,_), !.
+menor_aux(N,M,X) :-
+   M1 is M+1,
+   menor_aux(N,M1,X).
