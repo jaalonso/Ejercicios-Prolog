@@ -675,3 +675,22 @@ menor_aux(N,M,M) :-
 menor_aux(N,M,X) :-
    M1 is M+1,
    menor_aux(N,M1,X).
+
+% ----------------------------------------------------------------------
+% Ejercicio 18. Definir la relación operación_listas(+O,+L1,+L2,-L3) que
+% se verifica si L3 es la lista obtenida aplicando la operación binaria
+% O a los elementos de L1 y L2 que ocupan la misma posición (Se supone
+% que L1 y L2 tienen la misma longitud). Por ejemplo, 
+%    ?- operación_lista(+,[1,2,3],[4,5,6],L).
+%    L = [5, 7, 9] 
+%    ?- operación_lista(*,[1,2,3],[4,5,6],L).
+%    L = [4, 10, 18] 
+% ----------------------------------------------------------------------
+
+operación_lista(_,[],[],[]).
+operación_lista(O,[X1|L1],[X2|L2],[X3|L3]) :-
+   E =.. [O,X1,X2],
+   X3 is E,
+   operación_lista(O,L1,L2,L3).
+
+   
