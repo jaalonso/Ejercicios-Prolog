@@ -693,4 +693,37 @@ operación_lista(O,[X1|L1],[X2|L2],[X3|L3]) :-
    X3 is E,
    operación_lista(O,L1,L2,L3).
 
+% ----------------------------------------------------------------------
+% Ejercicio 19. Definir la relación elimina_vocales(+P1,-P2) que se
+% verifique si P2 es la palabra que se obtiene al eliminar todas las
+% vocales de la palabra P1. Por ejemplo, 
+%    ?- elimina_vocales(sevillano,P).
+%    P = svlln 
+% ------------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+elimina_vocales(P1,P2) :-
+   name(P1,L1),
+   códigos_vocales(L),
+   findall(N,(member(N,L1),not(member(N,L))),L2),
+   name(P2,L2).
+
+% códigos_vocales(?L) se verifica si L es la lista de los códigos ASCII
+% de las vocales. 
+códigos_vocales(L) :-
+   name(aeiouAEIOU,L).
    
+% 2ª solución
+% ===========
+
+elimina_vocales_2(P1,P2) :-
+   name(P1,L1),
+   exclude(es_código_vocal,L1,L2),
+   name(P2,L2).
+
+% es_código_vocal(X) se verifica si X es el códigos ASCII de una vocal.
+es_código_vocal(X) :-
+   códigos_vocales(L),
+   memberchk(X,L).
