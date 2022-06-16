@@ -727,3 +727,40 @@ elimina_vocales_2(P1,P2) :-
 es_código_vocal(X) :-
    códigos_vocales(L),
    memberchk(X,L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 20.1. Definir la relación longitud(+P,-N) que se verifique
+% si N es la longitud de la palabra P. Por ejemplo, 
+%    ?- longitud(ana,N).
+%    N = 3.
+% ----------------------------------------------------------------------
+
+longitud(P,N) :-
+   name(P,L),
+   length(L,N).
+
+% ----------------------------------------------------------------------
+% Ejercicio 20.2. Definir la relación palabra_maximal(+L,-P) que se
+% verifique si P es una palabra maximal (es decir, de máxima longitud)
+% de la lista de palabras L. Por ejemplo, 
+%    ?- palabra_maximal([eva,y,ana,se,van],P).
+%    P = eva ;
+%    P = ana ;
+%    P = van.
+% ----------------------------------------------------------------------
+
+palabra_maximal(L,P) :-
+   select(P,L,R),
+   longitud(P,N),
+   not((member(P1,R), longitud(P1,N1), N < N1)).
+
+% ----------------------------------------------------------------------
+% Ejercicio 20.3. Definir la relación palabras_maximales(+L1,-L2) que se 
+% verifique si L2 es la lista de las palabras maximales de la lista de
+% palabras L1. Por ejemplo, 
+%    ?- palabras_maximales([eva,y,ana,se,van],L).
+%    L = [eva, ana, van].
+% ----------------------------------------------------------------------
+
+palabras_maximales(L1,L2) :-
+   findall(P,palabra_maximal(L1,P),L2).
