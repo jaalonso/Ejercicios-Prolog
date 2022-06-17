@@ -764,3 +764,46 @@ palabra_maximal(L,P) :-
 
 palabras_maximales(L1,L2) :-
    findall(P,palabra_maximal(L1,P),L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 21. La clausura transitiva de una relación binaria R es la
+% menor relación transitiva que contiene a R; por ejemplo, la clausura
+% transitiva de {(a,b),(b,c)} es {(a,b),(b,c),(a,c).
+%
+% Definir el predicado clausura_transitiva(R,X,Y) que se verifique si
+% (X,Y) está en la clausura transitiva de la relación R. Por ejemplo,
+% suponiendo que se han definido las relaciones p y q por
+%    p(a,b).
+%    p(b,c).
+%    q(c,b).
+%    q(b,a).
+% se tiene
+%    ?- clausura_transitiva(p,X,Y).
+%    X = a,
+%    Y = b ;
+%    X = b,
+%    Y = c ;
+%    X = a,
+%    Y = c ;
+%    false.
+%    
+%    ?- clausura_transitiva(q,X,Y).
+%    X = c,
+%    Y = b ;
+%    X = b,
+%    Y = a ;
+%    X = c,
+%    Y = a ;
+%    false.
+% ----------------------------------------------------------------------
+
+p(a,b).
+p(b,c).
+q(c,b).
+q(b,a).
+
+clausura_transitiva(R,X,Y) :-
+   apply(R,[X,Y]).
+clausura_transitiva(R,X,Y) :-
+   apply(R,[X,Z]),
+   clausura_transitiva(R,Z,Y).
