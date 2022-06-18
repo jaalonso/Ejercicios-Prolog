@@ -807,3 +807,43 @@ clausura_transitiva(R,X,Y) :-
 clausura_transitiva(R,X,Y) :-
    apply(R,[X,Z]),
    clausura_transitiva(R,Z,Y).
+
+% ----------------------------------------------------------------------
+% Ejercicio 22. Definir la relación traducción(+L1,-L2) que se verifique
+% si L2 es la lista de palabras correspondientes a los dígitos de la
+% lista L1. Por ejemplo,
+%    ?- traducción([1,3],L).
+%    L = [uno,tres].
+% -----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+traducción_1([],[]).
+traducción_1([D|L1],[N|L2]) :-
+   nombre(D,N),
+   traducción_1(L1,L2).
+
+% nombre(D,N) se verifica si N es el nombre del dígito D.
+nombre(0,cero).
+nombre(1,uno).
+nombre(2,dos).
+nombre(3,tres).
+nombre(4,cuatro).
+nombre(5,cinco).
+nombre(6,seis).
+nombre(7,siete).
+nombre(8,ocho).
+nombre(9,nueve).
+
+% 2ª solución
+% ===========
+
+traducción_2(L1,L2) :-
+   findall(N,(member(D,L1),nombre(D,N)),L2).
+
+% 3ª solución
+% ===========
+
+traducción_3(L1,L2) :-
+   maplist(nombre,L1,L2).
