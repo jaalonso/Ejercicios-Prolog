@@ -904,3 +904,19 @@ suma(X,Y,Z) :-
    number(X), !,
    Z is X+Y.
 suma(X,_,X).
+
+% ----------------------------------------------------------------------
+% Ejercicio 24. Definir la relación aplana(+L1,?L2) que se verifique si
+% L2 es la lista obtenida reemplazando, recursivamente, cada lista de L1
+% por sus elementos. Por ejemplo,
+%    ?- aplana([a,[b,[c]],[[d],e]],L).
+%    L = [a, b, c, d, e] 
+% ----------------------------------------------------------------------
+
+aplana(X,[X]) :-
+   \+ is_list(X).
+aplana([],[]).
+aplana([X|L1],L2) :-
+   aplana(X,L3),
+   aplana(L1,L4),
+   append(L3,L4,L2).
