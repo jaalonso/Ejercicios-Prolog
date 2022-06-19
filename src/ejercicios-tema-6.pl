@@ -494,3 +494,152 @@ lanford(L):-
 sublista(L1,L2):-
    append(_,L3,L2),
    append(L1,_,L3).
+
+% ----------------------------------------------------------------------
+% Ejercicio 7.1. En cierta ocasión, el matemático Ramanujan estaba en
+% un hospital en Inglaterra y su amigo Hardy fue a visitarlo. Hardy
+% comentó que había llegado al hospital en un taxi de matrícula N y
+% esperaba que éste no fuese un mal presagio, ya que N era un número
+% poco interesante. Ramanujan no estuvo de acuerdo ya que
+% inmediatamente dijo que N tiene una propiedad muy especial: N es el
+% menor entero positivo que puede descomponerse de dos maneras
+% distintas como suma de dos cubos.
+%
+% El objetivo de este ejercicio es averiguar la matrícula del taxi que
+% llevó a Hardy a visitar a Ramanujan.
+%
+% Definir la relación es_cubo(+N) que se verifique si N es el cubo de un
+% entero. Por ejemplo,
+%    ?- es_cubo_1(1000).
+%    Yes
+%    ?- es_cubo_1(1001).
+%    No
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+es_cubo_1(N) :-  
+   between(1,N,X),
+   N is X*X*X.    
+
+% 2ª solución
+% ===========
+
+es_cubo_2(N) :-
+   Cota is round(N^(1/3)),   
+   between(1,Cota,X),        
+   N is X*X*X.               
+
+% 3ª solución
+% ===========
+
+es_cubo_3(N) :-
+   N =:= round(N ** (1/3)) ** 3.
+
+% Comparación de eficiencia:
+%    ?- time(es_cubo_1(1000001)).
+%    % 2,000,005 inferences, 0.153 CPU in 0.153 seconds (100% CPU, 13041583 Lips)
+%    false.
+%    
+%    ?- time(es_cubo_2(1000001)).
+%    % 202 inferences, 0.000 CPU in 0.000 seconds (97% CPU, 1422045 Lips)
+%    false.
+%    
+%    ?- time(es_cubo_3(1000001)).
+%    % 2 inferences, 0.000 CPU in 0.000 seconds (87% CPU, 51219 Lips)
+%    false.
+
+% En lo que sigue adoptaremos la tercera como definicón de es_cubo.
+es_cubo(N) :-
+   es_cubo_3(N).
+
+% ----------------------------------------------------------------------
+% Ejercicio 7.2. Definir la relación descompone(+N,-X,-Y) que se
+% verifique si X e Y son dos cubos cuya suma es N y, además, X es menor
+% o igual que Y. Por ejemplo,
+%    ?- descompone(1008,X,Y).
+%    X = 8
+%    Y = 1000 ;
+%    No
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+descompone_1(N,X,Y) :- 
+    between(1,N,X),         
+    between(1,N,Y),         
+    es_cubo(X),            
+    es_cubo(Y),            
+    X =< Y,            
+    N is X+Y.          
+
+% 2ª solución
+% ===========
+
+descompone_2(N,X,Y) :- 
+    between(1,N,X),    
+    es_cubo(X),        
+    Y is N - X,        
+    X =< Y,            
+    es_cubo(Y).        
+
+% 3ª solución
+% ===========
+
+descompone_3(N,X,Y) :-  
+    Cota is round((N/2)^(1/3)), 
+    between(1,Cota,M),          
+    X is M*M*M,             
+    Y is N-X,          
+    X =< Y,            
+    es_cubo(Y).            
+
+% Comparación de eficiencia
+%    ?- time(descompone_1(1707,X,Y)).
+%    % 11,713,622 inferences, 1.061 CPU in 1.061 seconds (100% CPU, 11036044 Lips)
+%    false.
+%    
+%    ?- time(descompone_2(1707,X,Y)).
+%    % 6,878 inferences, 0.001 CPU in 0.001 seconds (100% CPU, 6876583 Lips)
+%    false.
+%    
+%    ?- time(descompone_3(1707,X,Y)).
+%    % 65 inferences, 0.000 CPU in 0.000 seconds (94% CPU, 907479 Lips)
+%    false.
+
+% En lo que sigue adoptaremos la tercera como definición de descompone.
+descompone(N,X,Y) :-
+   descompone_3(N,X,Y).
+
+% ----------------------------------------------------------------------
+% Ejercicio 7.3. Definir la relación ramanujan(+N) que se verifique si N
+% puede descomponerse en suma de dos cubos \emph{exactamente} de dos
+% maneras distintas.
+% ----------------------------------------------------------------------
+
+ramanujan(N) :-
+    setof(par(X,Y),descompone(N,X,Y),[_,_]).
+
+% ----------------------------------------------------------------------
+% Ejercicio 7.4. Definir la relación hardy(-N) que se verifique si N es
+% el menor entero positivo que satisface el predicado ramanujan
+% anterior. ¿Cuál es la la matrícula del taxi que llevó a Hardy a
+% visitar a Ramanujan?
+% ----------------------------------------------------------------------
+
+hardy(N) :-         
+    hardy_aux(N,1). 
+hardy_aux(N,N) :-   
+    ramanujan(N),   
+    !.              
+hardy_aux(N,M) :-   
+    M1 is M+1,     
+    hardy_aux(N,M1).
+
+% La matrícula del taxi que llevó a  Hardy a visitar a Ramanujan se calcula
+% mediante la siguiente consulta
+%    ?- hardy(N).
+%    N = 1729
+% Por tanto, la matrícula del taxi es 1729.
