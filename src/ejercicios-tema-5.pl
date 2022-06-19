@@ -847,3 +847,60 @@ traducción_2(L1,L2) :-
 
 traducción_3(L1,L2) :-
    maplist(nombre,L1,L2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 23. Definir la relación transforma(+L1,-L2) que se verifique
+% si L2 es la lista obtenida sumándole a cada elemento numérico de L1 su
+% posición en la lista. Por ejemplo,
+%    ?- transforma([1,1,1,a,b,c,1,1,1],L).
+%    L = [2,3,4,a,b,c,8,9,10].
+%    
+%    ?- transforma([1,2,a,5,2,b,3,1],L).
+%    L = [2,4,a,9,7,b,10,9].
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+transforma(L1,L2) :-
+   transforma_aux(L1,1,L2).
+
+% transforma_aux(+L1,+N,-L2) se verifica si L2 es la lista obtenida
+% añadiéndole a cada elemento numérico de L1 la suma de N y su posición
+% en la lista.
+transforma_aux([],_,[]).
+transforma_aux([X|L1],N,[Y|L2]) :-
+   number(X), !,
+   Y is X+N,
+   N1 is N+1,
+   transforma_aux(L1,N1,L2).
+transforma_aux([X|L1],N,[X|L2]) :-
+   % not(number(X)),
+   N1 is N+1,
+   transforma_aux(L1,N1,L2).
+
+% 2ª solución
+% ===========
+
+transforma_2(L1,L2) :-
+   lista_de_posiciones(L1,L),
+   maplist(suma,L1,L,L2).
+
+% lista_de_posiciones(+L1,-L2) se verifica si L2 es la lista de
+% posiciones correspondiente a la lista L1. Por ejemplo,
+%    ?- lista_de_posiciones([1,1,1,a,b,c,1,1,1],L).
+%    L = [1, 2, 3, 4, 5, 6, 7, 8, 9] 
+lista_de_posiciones(L1,L2) :-
+   length(L1,N),
+   numlist(1,N,L2).
+
+% suma(+X,+Y,-Z) se verifica si Z es la suma de X y el número Y, cuando
+% X es un número y es igual a X, en caso contrario. Por ejemplo,
+%    ?- suma(3,2,Z).
+%    Z = 5 
+%    ?- suma(b,2,Z).
+%    Z = b 
+suma(X,Y,Z) :-
+   number(X), !,
+   Z is X+Y.
+suma(X,_,X).
