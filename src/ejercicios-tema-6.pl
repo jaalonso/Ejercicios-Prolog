@@ -643,3 +643,129 @@ hardy_aux(N,M) :-
 %    ?- hardy(N).
 %    N = 1729
 % Por tanto, la matrícula del taxi es 1729.
+
+% ----------------------------------------------------------------------
+% Ejercicio 8. Definir la relación subconjunto_suma(+L1,+N,?L2) que se
+% verifique si L2 es un subconjunto de L1 tal que la suma de los
+% elementos de L2 es N. Por ejemplo,
+%    ?- subconjunto_suma([10,7,3,4,2,1],7,L).
+%    L = [7] ;
+%    L = [3,4] ;
+%    L = [4,2,1] ;
+%    false.
+%    
+%    ?- subconjunto_suma([1,2,3],0,L).
+%    L = [].
+% ----------------------------------------------------------------------
+
+% 1ª solución
+% ===========
+
+subconjunto_suma_1(L1,N,L2) :-
+   subconjunto(L1,L2),
+   sumlist(L2,N).
+
+% subconjunto(+L1,?L2) se verifica si L2 es un subconjunto de L1. Por
+% ejemplo,
+%    ?- subconjunto([a,b,c,d],[b,d]).
+%    true 
+%    ?- subconjunto([a,b,c,d],[b,f]).
+%    false.
+%    ?- subconjunto([a,b,c],L).
+%    L = [a,b,c] ;
+%    L = [a,b] ;
+%    L = [a,c] ;
+%    L = [a] ;
+%    L = [b,c] ;
+%    L = [b] ;
+%    L = [c] ;
+%    L = [].
+subconjunto([],[]).
+subconjunto([X|L1],[X|L2]) :-
+   subconjunto(L1,L2).
+subconjunto([_|L1],L2) :-
+   subconjunto(L1,L2).
+
+% 2ª solución
+% ===========
+
+subconjunto_suma_2([],0,[]).
+subconjunto_suma_2([X|L1],N,[X|L2]) :-
+   N >= X,
+   N1 is N-X,
+   subconjunto_suma_2(L1,N1,L2).
+subconjunto_suma_2([_|L1],N,L2) :-
+   subconjunto_suma_2(L1,N,L2).
+
+% 3ª solución
+% ===========
+
+:- dynamic subconjuntos_suma_calculados_3/3.
+
+subconjunto_suma_3(L1,N,L2) :-
+   subconjuntos_suma_calculados_3(L1,N,S), !,
+   member(L2,S).
+subconjunto_suma_3(L1,N,L2) :-
+   findall(L,subconjunto_suma_3_aux(L1,N,L),S),
+   asserta(subconjuntos_suma_calculados_3(L1,N,S)),
+   member(L2,S).
+
+subconjunto_suma_3_aux([],0,[]).
+subconjunto_suma_3_aux([X|L1],N,[X|L2]) :-
+   N >= X,
+   N1 is N-X,
+   subconjunto_suma_3(L1,N1,L2).
+subconjunto_suma_3_aux([_|L1],N,L2) :-
+   subconjunto_suma_3(L1,N,L2).
+
+% 4ª solución
+% ===========
+
+:- dynamic subconjuntos_suma_calculados_4/3.
+
+subconjunto_suma_4(L1,N,L2) :-
+   subconjuntos_suma_calculados_4(N,L1,S), !,
+   member(L2,S).
+subconjunto_suma_4(L1,N,L2) :-
+   findall(L,subconjunto_suma_4_aux(L1,N,L),S),
+   asserta(subconjuntos_suma_calculados_4(N,L1,S)),
+   member(L2,S).
+
+subconjunto_suma_4_aux([],0,[]).
+subconjunto_suma_4_aux([X|L1],N,[X|L2]) :-
+   N >= X,
+   N1 is N-X,
+   subconjunto_suma_4(L1,N1,L2).
+subconjunto_suma_4_aux([_|L1],N,L2) :-
+   subconjunto_suma_4(L1,N,L2).
+
+% Comparación de eficiencia
+%    ?- numlist(1,20,_L1), time(findall(L,subconjunto_suma_1(_L1,10,L),_S)).
+%    % 26,214,419 inferences, 1.553 CPU in 1.553 seconds (100% CPU, 16884175 Lips)
+%    true.
+%    
+%    ?- numlist(1,20,_L1), time(findall(L,subconjunto_suma_2(_L1,10,L),_S)).
+%    % 1,378 inferences, 0.001 CPU in 0.001 seconds (100% CPU, 2496051 Lips)
+%    true.
+%    
+%    ?- numlist(1,20,_L1), time(findall(L,subconjunto_suma_3(_L1,10,L),_S)).
+%    % 3,599 inferences, 0.003 CPU in 0.003 seconds (100% CPU, 1118906 Lips)
+%    true.
+%    
+%    ?- numlist(1,20,_L1), time(findall(L,subconjunto_suma_4(_L1,10,L),_S)).
+%    % 3,497 inferences, 0.002 CPU in 0.002 seconds (100% CPU, 1416180 Lips)
+%    true.
+%    
+%    ?- numlist(1,140,_L1), time(findall(L,subconjunto_suma_2(_L1,70,L),_S)).
+%    % 70,315,223 inferences, 4.936 CPU in 4.936 seconds (100% CPU, 14244753 Lips)
+%    true.
+%    
+%    ?- numlist(1,140,_L1), time(findall(L,subconjunto_suma_3(_L1,70,L),_S)).
+%    % 607,584 inferences, 0.201 CPU in 0.201 seconds (100% CPU, 3022065 Lips)
+%    true.
+%    
+%    ?- numlist(1,140,_L1), time(findall(L,subconjunto_suma_4(_L1,70,L),_S)).
+%    % 607,584 inferences, 0.171 CPU in 0.171 seconds (100% CPU, 3552533 Lips)
+%    true.
+%
+% Se observa que la más eficiente es la cuarta definición.
