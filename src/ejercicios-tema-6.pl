@@ -615,8 +615,8 @@ descompone(N,X,Y) :-
 
 % ----------------------------------------------------------------------
 % Ejercicio 7.3. Definir la relación ramanujan(+N) que se verifique si N
-% puede descomponerse en suma de dos cubos \emph{exactamente} de dos
-% maneras distintas.
+% puede descomponerse en suma de dos cubos exactamente de dos maneras
+% distintas.
 % ----------------------------------------------------------------------
 
 ramanujan(N) :-
