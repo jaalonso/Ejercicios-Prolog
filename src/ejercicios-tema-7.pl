@@ -272,3 +272,306 @@ agrupación_compatible_minimal(C,P) :-
 %    P = [[asig3,asig5,asig8],[asig1,asig4,asig7],[asig2,asig6]] ;
 %    P = [[asig2,asig8],[asig1,asig4,asig7],[asig3,asig5,asig6]] ;
 %    false.
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.1. El objetivo de los siguientes ejercicios es la
+% simulación de una calculadora básica. Para ello consideraremos que en
+% cada momento la calculadora se encuentra en un determinado estado
+% caracterizado por una lista con cuatro elementos [UCE,UTA,UOA,VIM]
+% donde
+% + UCE es el último cálculo efectuado,
+% + UTA es la última tecla activada, 
+% + UOA es el último operador activado y
+% + VIM es el valor impreso.
+%
+% El estado inicial es [0,=,=,0] y está definido por
+%    estado_inicial([0,=,=,0]).
+%
+% Las acciones posibles son pulsar un dígito, una operación aritmética o
+% la de resultado y están definidas por
+%    acción(X) :- es_dígito(X).
+%    acción(X) :- es_operación(X).
+%    acción(X) :- es_resultado(X).
+%    
+%    es_dígito(0).
+%    es_dígito(1).
+%    es_dígito(2).
+%    es_dígito(3).
+%    es_dígito(4).
+%    es_dígito(5).
+%    es_dígito(6).
+%    es_dígito(7).
+%    es_dígito(8).
+%    es_dígito(9).  
+%    
+%    es_operación(+).
+%    es_operación(-).
+%    es_operación(*).
+%    es_operación(/).
+%    
+%    es_resultado(=).
+%
+% En la siguiente tabla se muestran los estados de la calculadora
+% correspondientes a las acciones indicadas en la última columna
+%   |----------------+-------|
+%   | estado         | tecla |
+%   |----------------+-------|
+%   | ( 0, =, =,  0) |  3    |
+%   | ( 0, 3, =,  3) |  +    |
+%   | ( 3, +, +,  3) |  2    |
+%   | ( 3, 2, +,  2) |  1    |
+%   | ( 3, 1, +, 21) |  *    |
+%   | (24, *, *, 24) |  2    |
+%   | (24, 2, *,  2) |  =    |
+%   | (48, =, =, 48) |       |
+%   |----------------+-------|
+% Es decir, si se parte del estado inicial y se realizan las acciones
+%    3 + 2 1 * 2 =
+% se obtiene como resultado el número 48.
+% 
+% Definir la relación transición(+E1,+X,?E2) que se verifique si E2 es
+% el estado obtenido aplicando la acción X al estado E1; es decir, si E1
+% es [UCE,UTA,UOA,VIM], entonces
+% + Si X es un dígito, entonces
+%   + si UTA es un dígito, E2 es [UCE,X,UOA,10*VIM+X];
+%   + en otro caso, E2 es [UCE,X,UOA,X].
+% + Si X no es un dígito, entonces
+%   + si UOA es una operación, E2 es [UOA(UCE,VIM),X,X,UOA(UCE,VIM)] 
+%   + en otro caso, E2 es [VIM,X,X,VIM].
+% Por ejemplo,
+%   ?- estado_inicial(E1),
+%      transición(E1,3,E2),
+%      transición(E2,+,E3),
+%      transición(E3,2,E4),
+%      transición(E4,1,E5),
+%      transición(E5,*,E6),
+%      transición(E6,2,E7),
+%      transición(E7,=,E8).
+%   E1 = [0, =, =, 0]
+%   E2 = [0, 3, =, 3]
+%   E3 = [3, +, +, 3]
+%   E4 = [3, 2, +, 2]
+%   E5 = [3, 1, +, 21]
+%   E6 = [24, *, *, 24]
+%   E7 = [24, 2, *, 2]
+%   E8 = [48, =, =, 48].
+% ----------------------------------------------------------------------
+
+estado_inicial([0,=,=,0]).
+
+acción(X) :- es_dígito(X).
+acción(X) :- es_operación(X).
+acción(X) :- es_resultado(X).
+
+es_dígito(0).
+es_dígito(1).
+es_dígito(2).
+es_dígito(3).
+es_dígito(4).
+es_dígito(5).
+es_dígito(6).
+es_dígito(7).
+es_dígito(8).
+es_dígito(9).  
+
+es_operación(+).
+es_operación(-).
+es_operación(*).
+es_operación(/).
+
+es_resultado(=).
+
+% 1ª solución
+% ===========
+
+transición_1([UCE,UTA,UOA,VIM],X,E) :-
+   ( es_dígito(X) ->
+     ( es_dígito(UTA) ->
+       Y is 10*VIM+X,
+       E = [UCE,X,UOA,Y]
+     ; % \+ es_dígito(UTA) ->
+       E = [UCE,X,UOA,X] )
+   ; % \+ es_dígito(X) ->
+     ( es_operación(UOA) ->
+       T =.. [UOA,UCE,VIM],
+       Y is T,
+       E = [Y,X,X,Y]
+     ; % \+ es_operación(UOA) ->
+       E = [VIM,X,X,VIM] )).
+
+% 2ª solución
+% ===========
+
+transición_2([UCE,UTA,UOA,VIM],X,E) :-
+   ( es_dígito(X), es_dígito(UTA) ->
+     Y is 10*VIM+X,
+     E = [UCE,X,UOA,Y]
+   ; es_dígito(X), \+ es_dígito(UTA) ->
+     E = [UCE,X,UOA,X]
+   ; \+ es_dígito(X), es_operación(UOA) ->
+     T =.. [UOA,UCE,VIM],
+     Y is T,
+     E = [Y,X,X,Y]
+   ; \+ es_dígito(X), es_resultado(UOA) ->
+     E = [VIM,X,X,VIM] ).
+
+% 3ª solución
+% ===========
+
+transición_3([UCE,UTA,UOA,VIM],X,[UCE,X,UOA,Y]) :-
+   es_dígito(X),
+   es_dígito(UTA),
+   Y is 10*VIM+X.
+transición_3([UCE,UTA,UOA,_VIM],X,[UCE,X,UOA,X]) :-
+   es_dígito(X),
+   \+ es_dígito(UTA).
+transición_3([UCE,_UTA,UOA,VIM],X,[Y,X,X,Y]) :-
+   \+ es_dígito(X),
+   es_operación(UOA),
+   T =.. [UOA,UCE,VIM],
+   Y is T.
+transición_3([_UCE,_UTA,=,VIM],X,[VIM,X,X,VIM]) :-
+   \+ es_dígito(X).
+
+% En lo que sige usaremos la primera.
+transición(E1,A,E2) :-
+   transición_1(E1,A,E2).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.2. Definir la relación transiciones(+E1,+L,?E2) que se
+% verifique si E2 es el estado obtenido aplicando las acciones de la
+% lista L al estado E1. Por ejemplo,
+%    ?- estado_inicial(_E1), transiciones(_E1,[3,+,2,1,*,2,=],E2).
+%    E2 = [48, =, =, 48] 
+% ----------------------------------------------------------------------
+
+transiciones(E,[],E).
+transiciones(E1,[X|L],E3) :-
+   transición(E1,X,E2),
+   transiciones(E2,L,E3).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.3. Definir la relación acciones(?L) que se verifique si L
+% es una lista cuyos elementos son acciones. Por ejemplo,
+%    ?- acciones([2,+,3,7]).
+%    true 
+%    ?- acciones([2,+,37]).
+%    false.
+% ----------------------------------------------------------------------
+
+acciones([]).
+acciones([X|L]) :-
+   acción(X),
+   acciones(L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.4. Calcular el número de posibles listas de acciones de
+% longitud 3. 
+% ----------------------------------------------------------------------
+
+
+% Solución
+%    ?- findall(_L,(length(_L,3), acciones(_L)),_LAL3), length(_LAL3,N).
+%    N = 3375.
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.5. Definir la relación empieza_por_dígito(?L) que se
+% verifique si el primer elemento de la lista L es un dígito.
+% ----------------------------------------------------------------------
+
+empieza_por_dígito([X|_L]) :-
+   es_dígito(X).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.6. Definir la relación tiene_operaciones_consecutivas(?L)
+% que se verifique si la lista L contiene dos operaciones consecutivas.
+% ----------------------------------------------------------------------
+
+tiene_operaciones_consecutivas(L) :-
+   append(_A,[X,Y|_B],L),
+   es_operación(X),
+   es_operación(Y).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.7. Definir la relación tiene_resultado_intermedio(?L) que
+% se verifique si la lista L contiene el símbolo = en una posición que
+% no es la última.
+% ----------------------------------------------------------------------
+
+tiene_resultado_intermedio(L) :-
+   append(_A,[=,_Y|_B],L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.8. Definir la relación divide_por_cero(?L) que se
+% verifique si en la lista L aparecen de manera consecutiva el símbolo /
+% y un cero.
+% ----------------------------------------------------------------------
+
+divide_por_cero(L) :-
+   append(_A,[/,0|_B],L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.9. Definir la relación termina_en_dígito_y_resultado(?L)
+% que se verifique si en la lista L los últimos elementos son un dígito
+% y el símbolo =.
+% ----------------------------------------------------------------------
+
+termina_en_dígito_y_resultado(L) :-
+   reverse(L,[=,X|_]),
+   es_dígito(X).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.10. Definir la relación acciones_válidas(L) que se
+% verifique si L es una lista de acciones válidas.
+% ----------------------------------------------------------------------
+
+acciones_válidas(L) :-
+   acciones(L),
+   empieza_por_dígito(L),
+   not(tiene_operaciones_consecutivas(L)),
+   not(tiene_resultado_intermedio(L)),
+   not(divide_por_cero(L)),
+   termina_en_dígito_y_resultado(L).
+
+% ----------------------------------------------------------------------
+% Ejercicio 6.11. Calcular el número de posibles listas de acciones
+% válidas de longitud 3.
+% ----------------------------------------------------------------------
+
+% Solución
+%    ?- findall(_L,(length(_L,3), acciones_válidas(_L)),_LAL3), length(_LAL3,N).
+%    N = 100.
+
+% ----------------------------------------------------------------------
+% Ejrcicio 6.12. Definir la relación cálculo(+N,+M,-L) que se verifique
+% si L es una lista de M acciones válidas que aplicadas al estado
+% inicial da como resultado el número N. Por ejemplo,
+%    ?- cálculo(5,2,L).
+%    L = [5,=] ;
+%    false.
+%    
+%    ?- cálculo(5,3,L).
+%    L = [0,5,=] ;
+%    false.
+%    
+%    ?- cálculo(5,4,L).
+%    L = [0,0,5,=] ;
+%    L = [0,+,5,=] ;
+%    L = [1,+,4,=] ;
+%    L = [1,*,5,=] ;
+%    L = [2,+,3,=] ;
+%    L = [3,+,2,=] ;
+%    L = [4,+,1,=] ;
+%    L = [5,+,0,=] ;
+%    L = [5,-,0,=] ;
+%    L = [5,*,1,=] ;
+%    L = [5,/,1,=] ;
+%    L = [6,-,1,=] ;
+%    L = [7,-,2,=] 
+% ----------------------------------------------------------------------
+
+cálculo(N,M,L) :-
+   estado_inicial(E1),
+   length(L,M),
+   acciones_válidas(L),
+   transiciones(E1,L,[N,=,=,N]).
