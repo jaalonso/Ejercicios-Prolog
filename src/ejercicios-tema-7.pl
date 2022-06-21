@@ -575,3 +575,110 @@ cálculo(N,M,L) :-
    length(L,M),
    acciones_válidas(L),
    transiciones(E1,L,[N,=,=,N]).
+
+% ----------------------------------------------------------------------
+% Ejercicio 7. En una subasta se hacen distintas ofertas. Cada oferta
+% incluye un lote de productos y un precio por dicho lote. Las ofertas
+% realizadas se representan mediante la relación oferta(O,L,P) que se
+% verifica si O es una oferta por el lote L con un coste P. Por ejemplo,
+% oferta(a,[1,2,3],30) representa la oferta a en la que se puja por el
+% lote compuesto por los objetos 1, 2 y 3 por un valor de 30 euros.
+%
+% Para la aceptación de las ofertas se observan las siguientes reglas:
+% + No puede aceptar dos ofertas que contienen un mismo objeto en sus
+%   lotes. 
+% + Se prefieren las ofertas de mayor ganancia.
+% 
+% Definir la relación aceptada(-L) que se verifique si L es una lista de
+% ofertas aceptadas. Por ejemplo, si las ofertas realizadas se definen
+% por
+%    oferta(a,[1,2,3],30).
+%    oferta(b,[1,2,3],20).
+%    oferta(c,[4],20).
+%    oferta(d,[2,4],20).
+%    oferta(e,[1,2],20).
+% entonces,
+%    ?- aceptada(L).
+%    L = [a, c] 
+% ----------------------------------------------------------------------
+
+oferta(a,[1,2,3],30).
+oferta(b,[1,2,3],20).
+oferta(c,[4],20).
+oferta(d,[2,4],20).
+oferta(e,[1,2],20).
+
+aceptada(L) :-
+   aceptable(L),
+   ganancia(L,G),
+   not((aceptable(L1), ganancia(L1,G1), G1 > G)).
+
+% aceptable(?L) se verifica si L es una lista de ofertas aceptable; es
+% decir, una lista de ofertas que no contienen objetos comunes en sus
+% lotes. Por ejemplo, con la definición anterior de ofertas/3,
+%    ?- aceptable(L).
+%    L = [a, c] ;
+%    L = [a] ;
+%    L = [b, c] ;
+%    L = [b] ;
+%    L = [c, e] ;
+%    L = [c] ;
+%    L = [d] ;
+%    L = [e] ;
+%    L = [].
+aceptable(L) :-
+   lista_de_ofertas(L1),
+   subconjunto(L,L1),
+   es_aceptable(L).
+
+% lista_de_ofertas(-L) se verifica si L es la lista de todas las
+% ofertas. Por ejemplo, con la definición anterior de ofertas/3,
+%    ?- lista_de_ofertas(L).
+%    L = [a, b, c, d, e].
+lista_de_ofertas(L) :-
+   findall(O,oferta(O,_,_),L).
+
+% es_aceptable(+L) se verifica si la lista de ofertas L es aceptable; es
+% decir, no contiene ofertas con objetos comunes en sus lotes. Por
+% ejemplo, con la definición anterior de ofertas/3,
+%    ?- es_aceptable([c,e]).
+%    true.
+%    ?- es_aceptable([c,d]).
+%    false.
+es_aceptable(L) :-
+   not(es_inaceptable(L)).
+
+% es_inaceptable(+L) se verifica si L es una lista de ofertas
+% inaceptable; es decir, contiene ofertas con objetos comunes en sus
+% lotes. Por ejemplo, con la definición anterior de ofertas/3,
+%    ?- es_inaceptable([c,d]).
+%    true 
+%    ?- es_inaceptable([c,e]).
+%    false.
+es_inaceptable(L) :-
+   member(O1,L),
+   member(O2,L),
+   O1 \= O2,
+   oferta(O1,L1,_),
+   oferta(O2,L2,_),
+   se_solapan(L1,L2).
+
+% se_solapan(+L1,+L2) se verifica si L1 y L2 se solapan; es decir,
+% tienen elementos comunes. Por ejemplo,
+%    ?- se_solapan([a,b,c],[d,b,e]).
+%    true 
+%    ?- se_solapan([a,b,c],[d,e]).
+%    false.
+se_solapan(L1,L2) :-
+   member(X,L1),
+   member(X,L2).
+
+% ganancia(+L,-G) se verifica si la ganancia de la lista de ofertas L es
+% G. Por ejemplo, con la definición anterior de ofertas/3,
+%    ?- ganancia([a,c],G).
+%    G = 50.
+ganancia([],0).
+ganancia([O|L],G) :-
+   oferta(O,_,G1),
+   ganancia(L,G2),
+   G is G1+G2.
