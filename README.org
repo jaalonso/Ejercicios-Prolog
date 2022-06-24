@@ -15,5 +15,3 @@ permite trabajar con la relación sin necesidad de tener instalado Prolog.
 + [[./src/ejercicios-tema-7.pl][Tema 7: Aplicaciones: Grafos, reinas y mapas]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-7.pl][SWISH]]).
 + [[./src/ejercicios-tema-8.pl][Tema 8: Resolución de problemas de espacios de estados]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-8.pl][SWISH]]).
 + [[./src/ejercicios-tema-9.pl][Tema 9: Programación lógica con restricciones]] (en [[https://swish.swi-prolog.org/p/PLP_ejercicios-tema-9.pl][SWISH]]).
-
-Hasta aquí.
